@@ -1,0 +1,37 @@
+{
+    "name": "cesargb/php-log-rotation",
+    "description": "PHP Class to rotate log files",
+    "type": "library",
+    "keywords": [
+        "php",
+        "log",
+        "rotation"
+    ],
+    "homepage": "https://github.com/cesargb/php-log-rotation",
+    "authors": [
+	{
+		"name": "Cesar Garcia",
+		"email": "cesargb@gmail.com"
+	}
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^5.6 || ^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cesargb\\Log\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Cesargb\\Log\\Test\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7 || ^7.0"
+    }
+}
