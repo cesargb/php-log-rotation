@@ -8,14 +8,14 @@ class TestCase extends PHPUnitTestCase
 {
     const DIR_WORK = __DIR__.'/files/';
 
-    public function setUp()
+    public function setUp(): void
     {
         if (! is_dir(self::DIR_WORK)) {
             mkdir(self::DIR_WORK);
         }
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $files = array_diff(scandir(self::DIR_WORK), ['.', '..']);
 
