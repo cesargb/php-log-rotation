@@ -34,9 +34,8 @@ class RotativeTest extends TestCase
                         ->setFileOriginal(self::DIR_WORK.'file.log')
         );
 
-        $result =$rotation->rotate(self::DIR_WORK.'file.log');
+        $result = $rotation->rotate(self::DIR_WORK.'file.log');
 
         $this->assertFalse($result);
     }
-
 }
