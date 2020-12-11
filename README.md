@@ -20,19 +20,17 @@ composer require cesargb/php-log-rotation
 This is an example:
 
 ```php
-use use Cesargb\Log\Rotation;
+use Cesargb\Log\Rotation;
+use Cesargb\Log\Processors\GzProcessor;
+use Cesargb\Log\Processors\RotativeProcessor;
 
 $fileLog='file.log';
 
 $rotation = new Rotation();
 
 $rotation->addProcessor(new GzProcessor());
-
-$rotation->addProcessor(
-    (new RotativeProcessor())->setMaxFiles(7)
-);
-
-$rotation->rotate($fileLog);
+    ->addProcessor(new RotativeProcessor())
+    ->rotate($fileLog);
 ```
 
 ## Processor
@@ -53,9 +51,9 @@ By default is 366 (One year if rotate each day).
 
 ## Todo
 
-* Processor Prefix; To add prefix to file rotated, sample: date (yyyy-mm-dd)
-* Processor Archive; To move the file rotated to other dir.
-* Processors to move to the cloud
+[ ] Processor Prefix; To add prefix to file rotated, sample: date (yyyy-mm-dd)
+[ ] Processor Archive; To move the file rotated to other dir.
+[ ] Processors to move to the cloud
 
 ## Test
 Run test with:
