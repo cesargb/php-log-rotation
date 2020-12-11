@@ -4,6 +4,8 @@ PHP Class to rotate log files
 
 This class permit log rotating with diferetne processor.
 
+![tests](https://github.com/cesargb/php-log-rotation/workflows/tests/badge.svg)
+
 ## Usage
 
 This is an example:
