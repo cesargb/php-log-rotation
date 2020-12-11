@@ -14,9 +14,17 @@ class Rotation
         return $this->processors;
     }
 
-    public function addProcessor(AbstractProcessor $processor)
+    /**
+     * Add processors to rotate
+     *
+     * @param AbstractProcessor ...$processors
+     * @return self
+     */
+    public function addProcessor(AbstractProcessor ...$processors): self
     {
-        $this->processors[] = $processor;
+        $this->processors = array_merge($this->processors, $processors);
+
+        return $this;
     }
 
     /**

@@ -40,9 +40,8 @@ class RotativeProcessorTest extends TestCase
 
         $rotation = new Rotation();
 
-        $rotation->addProcessor(new GzProcessor());
-
         $rotation->addProcessor(
+            new GzProcessor(),
             (new RotativeProcessor())
                         ->setMaxFiles($maxFiles)
                         ->setFileOriginal(self::DIR_WORK.'file.log')
