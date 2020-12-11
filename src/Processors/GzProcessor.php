@@ -6,36 +6,32 @@ class GzProcessor extends AbstractProcessor
 {
     const EXTENSION_COMPRESS = 'gz';
 
-    public function handler($file)
+    public function handler($file): ?string
     {
-        parent::handler($file);
-
         $nextFile = $this->fileOriginal.'.'.self::EXTENSION_COMPRESS;
 
         $fd = fopen($file, 'r');
 
-        if ($fd) {
-            $gz = gzopen($nextFile, 'wb');
+        if (!$fd) {
+            return null;
+        }
 
-            if (! $gz) {
-                fclose($fd);
+        $gz = gzopen($nextFile, 'wb');
 
-                return false;
-            }
-
-            while (! feof($fd)) {
-                gzwrite($gz, fread($fd, 1024 * 512));
-            }
-
-            gzclose($gz);
-
+        if (! $gz) {
             fclose($fd);
 
-            unlink($file);
-
-            return $this->processed($nextFile);
-        } else {
-            return false;
+            return null;
         }
+
+        while (! feof($fd)) {
+            gzwrite($gz, fread($fd, 1024 * 512));
+        }
+
+        gzclose($gz);
+        fclose($fd);
+        unlink($file);
+
+        return $this->processed($nextFile);
     }
 }

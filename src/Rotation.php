@@ -19,73 +19,118 @@ class Rotation
         $this->processors[] = $processor;
     }
 
-    public function rotate($file)
+    /**
+     * Rotate file
+     *
+     * @param string $file
+     * @return string|null
+     */
+    public function rotate(string $file): ?string
     {
-        if (count($this->processors) == 0) {
-            throw new LogicException('You need at least one processor to logs rotate', 1);
+        if (!$this->canRotate($file)) {
+            return null;
+        }
 
-            return false;
+        $this->initProcessorFile($file);
+
+        $fileRotate = $this->moveContentToTempFile($file);
+
+        return $this->runProcessors($fileRotate);
+    }
+
+    /**
+     * Run all processors
+     *
+     * @param string|null $fileRotate
+     * @return string|null
+     */
+    private function runProcessors(?string $fileRotate): ?string
+    {
+        if (!$fileRotate) {
+            return null;
         }
 
         foreach ($this->processors as $processor) {
-            $processor->setFileOriginal($file);
-        }
+            $fileRotate = $processor->handler($fileRotate);
 
-        clearstatcache();
-
-        if (! $this->fileIsValid($file)) {
-            throw new LogicException(sprintf('the file %s not is valid.', $file), 2);
-
-            return false;
-        }
-
-        $fileRotate = $this->extractData($file);
-
-        if ($fileRotate !== false) {
-            foreach ($this->processors as $processor) {
-                $fileNew = $processor->handler($fileRotate);
-
-                if ($fileNew === false && ! $processor->getContinueNextProcessorIfFail()) {
-                    return false;
-                } else {
-                    $fileRotate = $fileNew;
-                }
+            if (!$fileRotate) {
+                return null;
             }
-
         }
 
         return $fileRotate;
     }
 
-    protected function fileIsValid($file)
+    /**
+     * check if file need rotate
+     *
+     * @param string $file
+     * @return boolean
+     * @throws LogicException
+     */
+    private function canRotate(string $file): bool
     {
-        return is_file($file) && is_writable($file);
+        if (count($this->processors) == 0) {
+            throw new LogicException('You need at least one processor to logs rotate', 1);
+        }
+
+        if (! $this->fileIsValid($file)) {
+            throw new LogicException(sprintf('the file %s not is valid.', $file), 2);
+        }
+
+        return filesize($file) > 0;
     }
 
-    protected function extractData($file)
+    /**
+     * Set original File to processor
+     *
+     * @param string $file
+     * @return void
+     */
+    private function initProcessorFile(string $file)
     {
-        if (filesize($file) == 0) {
-            return false;
-        }
+        $this->processors[0]->setFileOriginal($file);
+    }
+
+    /**
+     * check if file is valid to rotate
+     *
+     * @param string|null $file
+     * @return boolean
+     */
+    private function fileIsValid(?string $file): bool
+    {
+        return $file && is_file($file) && is_writable($file);
+    }
+
+    /**
+     * move data to temp file and truncate
+     *
+     * @param string $file
+     * @return string|null
+     */
+    private function moveContentToTempFile(string $file): ?string
+    {
+        clearstatcache();
 
         $fileDestination = tempnam(dirname($file), 'LOG');
 
         $fd = fopen($file, 'r+');
 
         if (! $fd) {
-            return false;
+            return null;
         }
 
         if (! flock($fd, LOCK_EX)) {
             fclose($fd);
 
-            return false;
+            return null;
         }
 
         if (! copy($file, $fileDestination)) {
             fclose($fd);
 
-            return false;
+            return null;
         }
 
         if (! ftruncate($fd, 0)) {
@@ -93,7 +138,7 @@ class Rotation
 
             unlink($fileDestination);
 
-            return false;
+            return null;
         }
 
         flock($fd, LOCK_UN);

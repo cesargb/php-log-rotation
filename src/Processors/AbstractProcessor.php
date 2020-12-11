@@ -2,37 +2,17 @@
 
 namespace Cesargb\Log\Processors;
 
-use Cesargb\Log\Processors\ProcessorInterface;
-
-abstract class AbstractProcessor implements ProcessorInterface
+abstract class AbstractProcessor
 {
-    protected $continueNextProcessorIfFail = true;
-
-    protected $fileIn;
-
-    protected $fileOut;
+    private $fileOut;
 
     protected $fileOriginal;
 
+    abstract public function handler($file): ?string;
 
     public function __construct()
     {
         clearstatcache();
-    }
-
-    public function getContinueNextProcessorIfFail()
-    {
-        return $this->continueNextProcessorIfFail;
-    }
-
-    public function getFileIn()
-    {
-        return $this->fileIn;
-    }
-
-    public function getFileOut()
-    {
-        return $this->fileOut;
     }
 
     public function setFileOriginal($fileOriginal)
@@ -42,21 +22,7 @@ abstract class AbstractProcessor implements ProcessorInterface
         return $this;
     }
 
-    public function setOverWrite($overWrite)
-    {
-        $this->overWrite = $overWrite;
-
-        return $this;
-    }
-
-    public function handler($file)
-    {
-        $this->fileIn = $file;
-
-        $this->fileOut = false;
-    }
-
-    public function processed($file)
+    protected function processed($file): ?string
     {
         if (is_file($file)) {
             $this->fileOut = $file;
@@ -64,6 +30,6 @@ abstract class AbstractProcessor implements ProcessorInterface
             return $this->fileOut;
         }
 
-        return false;
+        return null;
     }
 }

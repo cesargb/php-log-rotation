@@ -4,19 +4,23 @@ namespace Cesargb\Log\Processors;
 
 class RotativeProcessor extends AbstractProcessor
 {
-    protected $maxFiles = 366;
+    private int $maxFiles = 366;
 
-    public function setMaxFiles($maxFiles)
+    /**
+     * Max num file rotate
+     *
+     * @param int $maxFiles
+     * @return self
+     */
+    public function setMaxFiles(int $maxFiles): self
     {
         $this->maxFiles = $maxFiles;
 
         return $this;
     }
 
-    public function handler($file)
+    public function handler($file): ?string
     {
-        parent::handler($file);
-
         $fileInfo = pathinfo($file);
 
         $extension_in = $fileInfo['extension'] ?? '';
