@@ -31,34 +31,31 @@ class Rotation
             return null;
         }
 
-        $this->initProcessorFile($file);
-
         $fileRotate = $this->moveContentToTempFile($file);
 
-        return $this->runProcessors($fileRotate);
+        return $this->runProcessors($file, $fileRotate);
     }
 
     /**
      * Run all processors
      *
-     * @param string|null $fileRotate
+     * @param string $originalFile
+     * @param string|null $fileRotated
      * @return string|null
      */
-    private function runProcessors(?string $fileRotate): ?string
+    private function runProcessors(string $originalFile, ?string $fileRotated): ?string
     {
-        if (!$fileRotate) {
-            return null;
-        }
+        $this->initProcessorFile($originalFile);
 
         foreach ($this->processors as $processor) {
-            $fileRotate = $processor->handler($fileRotate);
-
-            if (!$fileRotate) {
+            if (!$fileRotated) {
                 return null;
             }
+
+            $fileRotated = $processor->handler($fileRotated);
         }
 
-        return $fileRotate;
+        return $fileRotated;
     }
 
     /**
