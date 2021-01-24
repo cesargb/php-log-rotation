@@ -31,11 +31,12 @@ class Rotation
      * Rotate file
      *
      * @param string $file
+     * @param string $maxFileSize
      * @return string|null
      */
-    public function rotate(string $file): ?string
+    public function rotate(string $file, int $maxFileSize = 0): ?string
     {
-        if (!$this->canRotate($file)) {
+        if (!$this->canRotate($file, $maxFileSize)) {
             return null;
         }
 
@@ -70,10 +71,11 @@ class Rotation
      * check if file need rotate
      *
      * @param string $file
+     * @param int $maxFileSize
      * @return boolean
      * @throws LogicException
      */
-    private function canRotate(string $file): bool
+    private function canRotate(string $file, int $maxFileSize = 0): bool
     {
         if (count($this->processors) == 0) {
             throw new LogicException('You need at least one processor to logs rotate', 1);
@@ -83,7 +85,7 @@ class Rotation
             throw new LogicException(sprintf('the file %s not is valid.', $file), 2);
         }
 
-        return filesize($file) > 0;
+        return filesize($file) > ($maxFileSize > 0 ? $maxFileSize : 0);
     }
 
     /**
