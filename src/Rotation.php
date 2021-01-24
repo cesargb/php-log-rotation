@@ -84,6 +84,11 @@ class Rotation
         if (! $this->fileIsValid($file)) {
             throw new LogicException(sprintf('the file %s not is valid.', $file), 2);
         }
+        
+        if ($maxFileSize > 0) {
+            // convert MB to bytes
+            $maxFileSize = $maxFileSize * pow(1024, 2);
+        }
 
         return filesize($file) > ($maxFileSize > 0 ? $maxFileSize : 0);
     }
