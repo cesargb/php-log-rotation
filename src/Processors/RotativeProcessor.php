@@ -23,21 +23,11 @@ class RotativeProcessor extends AbstractProcessor
     {
         $fileInfo = pathinfo($file);
 
-        $extension_in = $fileInfo['extension'] ?? '';
-
-//        $fileInfo = pathinfo($this->fileOriginal);
-
-//        $extension_original = $fileInfo['extension'] ?? '';
-
         $glob = $fileInfo['dirname'].DIRECTORY_SEPARATOR.$fileInfo['filename'];
 
         if (! empty($fileInfo['extension'])) {
             $glob .= '.'.$fileInfo['extension'];
         }
-
-        //if ($extension_in != '' ){ //&& $extension_in != $extension_original) {
-        //    $glob .= '.'.$extension_in;
-        //}
 
         $glob .= '.*';
 
