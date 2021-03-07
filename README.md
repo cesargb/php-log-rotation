@@ -25,12 +25,13 @@ use Cesargb\Log\Processors\GzProcessor;
 use Cesargb\Log\Processors\RotativeProcessor;
 
 $fileLog='file.log';
+$fileMaxSize=50; // only rotate log if over 50MB
 
 $rotation = new Rotation();
 
 $rotation->addProcessor(new GzProcessor());
     ->addProcessor(new RotativeProcessor())
-    ->rotate($fileLog);
+    ->rotate($fileLog, $fileMaxSize);
 ```
 
 ## Processor
