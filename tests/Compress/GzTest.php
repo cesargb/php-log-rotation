@@ -5,15 +5,14 @@ namespace Cesargb\Log\Test\Processors;
 use LogicException;
 use Cesargb\Log\Rotation;
 use Cesargb\Log\Test\TestCase;
-use Cesargb\Log\Processors\GzProcessor;
 
-class GzProcessorTest extends TestCase
+class GzTest extends TestCase
 {
     public function test_rotation_processor_with_gz_processor()
     {
         $rotation = new Rotation();
 
-        $rotation->addProcessor(new GzProcessor());
+        $rotation->compress();
 
         $content = 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
                     Aenean commodo ligula eget dolor. Aenean massa. Cum sociis
@@ -29,10 +28,10 @@ class GzProcessorTest extends TestCase
 
         $this->assertStringEqualsFile(self::DIR_WORK.'file.log', '');
 
-        $this->assertEquals(self::DIR_WORK.'file.log.gz', $rotated_file);
+        $this->assertEquals(self::DIR_WORK.'file.log.1.gz', $rotated_file);
 
-        $this->assertFileExists(self::DIR_WORK.'file.log.gz');
+        $this->assertFileExists(self::DIR_WORK.'file.log.1.gz');
 
-        $this->assertEquals($content, implode("", gzfile(self::DIR_WORK.'file.log.gz')));
+        $this->assertEquals($content, implode("", gzfile(self::DIR_WORK.'file.log.1.gz')));
     }
 }

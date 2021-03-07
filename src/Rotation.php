@@ -2,27 +2,59 @@
 
 namespace Cesargb\Log;
 
+use Cesargb\Log\Compress\Gz;
 use LogicException;
-use Cesargb\Log\Processors\AbstractProcessor;
+use Cesargb\Log\Processors\RotativeProcessor;
 
 class Rotation
 {
-    protected $processors = [];
+    private RotativeProcessor $processor;
 
-    public function getProcessors()
+    private bool $_compress = false;
+
+    private int $_minSize = 0;
+
+    public function __construct()
     {
-        return $this->processors;
+        $this->processor = new RotativeProcessor();
     }
 
     /**
-     * Add processors to rotate
+     * Log files are rotated count times before being removed
      *
-     * @param AbstractProcessor ...$processors
+     * @param int $count
      * @return self
      */
-    public function addProcessor(AbstractProcessor ...$processors): self
+    public function files(int $count): self
     {
-        $this->processors = array_merge($this->processors, $processors);
+        $this->processor->files($count);
+
+        return $this;
+    }
+
+    /**
+     * Old versions of log files are compressed
+     *
+     * @return self
+     */
+    public function compress(): self
+    {
+        $this->_compress = true;
+
+        $this->processor->compress();
+
+        return $this;
+    }
+
+    /**
+     * Log files are rotated when they grow bigger than size bytes
+     *
+     * @param integer $bytes
+     * @return self
+     */
+    public function minSize(int $bytes): self
+    {
+        $this->_minSize = $bytes;
 
         return $this;
     }
@@ -31,38 +63,43 @@ class Rotation
      * Rotate file
      *
      * @param string $file
-     * @param string $maxFileSize
      * @return string|null
      */
-    public function rotate(string $file, int $maxFileSize = 0): ?string
+    public function rotate(string $file): ?string
     {
-        if (!$this->canRotate($file, $maxFileSize)) {
+        if (!$this->canRotate($file)) {
             return null;
         }
 
         $fileRotate = $this->moveContentToTempFile($file);
 
-        return $this->runProcessors($file, $fileRotate);
+        $fileRotated = $this->runProcessor($file, $fileRotate);
+
+        if ($fileRotated && $this->_compress) {
+            $gz = new Gz();
+
+            $fileRotated = $gz->handler($fileRotated);
+        }
+
+        return $fileRotated;
     }
 
     /**
-     * Run all processors
+     * Run processor
      *
      * @param string $originalFile
      * @param string|null $fileRotated
      * @return string|null
      */
-    private function runProcessors(string $originalFile, ?string $fileRotated): ?string
+    private function runProcessor(string $originalFile, ?string $fileRotated): ?string
     {
         $this->initProcessorFile($originalFile);
 
-        foreach ($this->processors as $processor) {
-            if (!$fileRotated) {
-                return null;
-            }
-
-            $fileRotated = $processor->handler($fileRotated);
+        if (!$fileRotated) {
+            return null;
         }
+
+        $fileRotated = $this->processor->handler($fileRotated);
 
         return $fileRotated;
     }
@@ -71,26 +108,16 @@ class Rotation
      * check if file need rotate
      *
      * @param string $file
-     * @param int $maxFileSize
      * @return boolean
      * @throws LogicException
      */
-    private function canRotate(string $file, int $maxFileSize = 0): bool
+    private function canRotate(string $file): bool
     {
-        if (count($this->processors) == 0) {
-            throw new LogicException('You need at least one processor to logs rotate', 1);
-        }
-
         if (! $this->fileIsValid($file)) {
             throw new LogicException(sprintf('the file %s not is valid.', $file), 2);
         }
-        
-        if ($maxFileSize > 0) {
-            // convert MB to bytes
-            $maxFileSize = $maxFileSize * pow(1024, 2);
-        }
 
-        return filesize($file) > ($maxFileSize > 0 ? $maxFileSize : 0);
+        return filesize($file) > ($this->_minSize > 0 ? $this->_minSize : 0);
     }
 
     /**
@@ -101,7 +128,7 @@ class Rotation
      */
     private function initProcessorFile(string $file)
     {
-        $this->processors[0]->setFileOriginal($file);
+        $this->processor->setFileOriginal($file);
     }
 
     /**

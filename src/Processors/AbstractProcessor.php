@@ -8,11 +8,18 @@ abstract class AbstractProcessor
 
     protected $fileOriginal;
 
+    protected string $suffix = '';
+
     abstract public function handler($file): ?string;
 
     public function __construct()
     {
         clearstatcache();
+    }
+
+    public function compress()
+    {
+        $this->suffix = '.gz';
     }
 
     public function setFileOriginal($fileOriginal)

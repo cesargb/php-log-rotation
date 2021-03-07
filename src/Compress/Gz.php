@@ -1,14 +1,14 @@
 <?php
 
-namespace Cesargb\Log\Processors;
+namespace Cesargb\Log\Compress;
 
-class GzProcessor extends AbstractProcessor
+class Gz
 {
     const EXTENSION_COMPRESS = 'gz';
 
     public function handler($file): ?string
     {
-        $nextFile = $this->fileOriginal.'.'.self::EXTENSION_COMPRESS;
+        $fileCompress = $file.'.'.self::EXTENSION_COMPRESS;
 
         $fd = fopen($file, 'r');
 
@@ -16,7 +16,7 @@ class GzProcessor extends AbstractProcessor
             return null;
         }
 
-        $gz = gzopen($nextFile, 'wb');
+        $gz = gzopen($fileCompress, 'wb');
 
         if (! $gz) {
             fclose($fd);
@@ -32,6 +32,6 @@ class GzProcessor extends AbstractProcessor
         fclose($fd);
         unlink($file);
 
-        return $this->processed($nextFile);
+        return $fileCompress;
     }
 }
