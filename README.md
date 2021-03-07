@@ -17,8 +17,6 @@ composer require cesargb/php-log-rotation
 
 ## Usage
 
-
-
 This is an example:
 
 ```php
