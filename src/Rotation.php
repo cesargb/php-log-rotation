@@ -8,6 +8,8 @@ use Cesargb\Log\Processors\AbstractProcessor;
 class Rotation
 {
     protected $processors = [];
+    protected $size       = 0;
+    protected $age        = '7 DAY';
 
     public function getProcessors()
     {
@@ -26,6 +28,42 @@ class Rotation
 
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getSize()
+    {
+        return $this->size;
+    }
+
+    /**
+     * @param mixed $size
+     */
+    public function setSize($size): self
+    {
+        $this->size = $size;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAge()
+    {
+        return $this->age;
+    }
+
+    /**
+     * @param mixed $age
+     */
+    public function setAge($age): self
+    {
+        $this->age = $age;
+        return $this;
+    }
+
+
 
     /**
      * Rotate file
@@ -83,7 +121,44 @@ class Rotation
             throw new LogicException(sprintf('the file %s not is valid.', $file), 2);
         }
 
-        return filesize($file) > 0;
+        if($this->filehasMaxSize($file))
+            return true;
+
+        if($this->filehasMaxAge($file))
+            return true;
+
+        return false;
+    }
+
+    /**
+     *  Check file size is larger than defined.
+     *
+     * @param $file
+     * @return bool
+     */
+    protected function filehasMaxSize($file)
+    {
+        $maxSize = $this->convertUserStrToBytes($this->getSize());
+        if ( filesize($file) > $maxSize )
+            return true;
+
+        return false;
+    }
+
+
+    /**
+     *  Check file age is larger than defined.
+     *
+     * @param $file
+     * @return bool
+     */
+    protected function filehasMaxAge($file)
+    {
+        $maxAge       = $this->getAge();
+        if (filemtime($file) < strtotime('-'.$maxAge))
+            return true;
+
+        return false;
     }
 
     /**
@@ -153,5 +228,22 @@ class Rotation
         fclose($fd);
 
         return $fileDestination;
+    }
+
+    private function convertUserStrToBytes($str)
+    {
+        $str = trim($str);
+        $num = (double)$str;
+        if (strtoupper(substr($str, -1)) == "B")  $str = substr($str, 0, -1);
+        switch (strtoupper(substr($str, -1)))
+        {
+            case "P":  $num *= 1024;
+            case "T":  $num *= 1024;
+            case "G":  $num *= 1024;
+            case "M":  $num *= 1024;
+            case "K":  $num *= 1024;
+        }
+
+        return $num;
     }
 }
