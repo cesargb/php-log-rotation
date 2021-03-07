@@ -17,6 +17,8 @@ composer require cesargb/php-log-rotation
 
 ## Usage
 
+
+
 This is an example:
 
 ```php
@@ -29,7 +31,8 @@ $rotation = new Rotation();
 $rotation
     ->compress()
     ->files(30)
-    ->rotate($fileLog, $fileMaxSize);
+    ->minSize(1)
+    ->rotate($fileLog);
 ```
 
 ## Test
