@@ -22,15 +22,19 @@ This is an example:
 ```php
 use Cesargb\Log\Rotation;
 
-$fileLog='file.log';
-
 $rotation = new Rotation();
 
-$rotation
-    ->compress()
-    ->files(30)
-    ->minSize(1)
-    ->rotate($fileLog);
+// Rotate a file
+$rotation->rotate('file.log');
+
+// Log files are rotated 10 times before being removed, 366 default
+$rotation->files(30)->rotate('file.log');
+
+// Compress file rotated
+$rotation->compress()->rotate('file.log');
+
+// Log files are rotated only if they grow bigger then 1024 bytes
+$rotation->minSize(1024)->rotate('file.log');
 ```
 
 ## Test
