@@ -18,7 +18,10 @@ class Rotation
      */
     private $_compress = false;
 
-    private int $_minSize = 0;
+    /**
+     * @var integer
+     */
+    private $_minSize = 0;
 
     public function __construct()
     {
