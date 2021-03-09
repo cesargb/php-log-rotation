@@ -30,7 +30,7 @@ class RotativeProcessor extends AbstractProcessor
         return $this->processed($nextFile);
     }
 
-    private function rotate(int $number = 1)
+    private function rotate(int $number = 1): string
     {
         $file = "{$this->fileOriginal}.{$number}{$this->suffix}";
 
@@ -51,8 +51,6 @@ class RotativeProcessor extends AbstractProcessor
         rename($file, $nextFile);
 
         return "{$this->fileOriginal}.{$number}{$this->suffix}";
-
-
     }
 
     private function getnumber(string $file): ?int

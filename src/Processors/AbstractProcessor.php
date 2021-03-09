@@ -4,9 +4,9 @@ namespace Cesargb\Log\Processors;
 
 abstract class AbstractProcessor
 {
-    private $fileOut;
+    private string $fileOut;
 
-    protected $fileOriginal;
+    protected string $fileOriginal;
 
     protected string $suffix = '';
 
@@ -17,12 +17,12 @@ abstract class AbstractProcessor
         clearstatcache();
     }
 
-    public function compress()
+    public function compress(): void
     {
         $this->suffix = '.gz';
     }
 
-    public function setFileOriginal($fileOriginal)
+    public function setFileOriginal($fileOriginal): self
     {
         $this->fileOriginal = $fileOriginal;
 

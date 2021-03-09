@@ -8,20 +8,11 @@ use Cesargb\Log\Processors\RotativeProcessor;
 
 class Rotation
 {
-    /**
-     * @var RotativeProcessor
-     */
-    private $processor;
+    private RotativeProcessor $processor;
 
-    /**
-     * @var boolean
-     */
-    private $_compress = false;
+    private bool $_compress = false;
 
-    /**
-     * @var integer
-     */
-    private $_minSize = 0;
+    private int $_minSize = 0;
 
     public function __construct()
     {
@@ -135,7 +126,7 @@ class Rotation
      * @param string $file
      * @return void
      */
-    private function initProcessorFile(string $file)
+    private function initProcessorFile(string $file): void
     {
         $this->processor->setFileOriginal($file);
     }
