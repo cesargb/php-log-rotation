@@ -8,9 +8,15 @@ use Cesargb\Log\Processors\RotativeProcessor;
 
 class Rotation
 {
+    /**
+     * @var RotativeProcessor
+     */
     private $processor;
 
-    private bool $_compress = false;
+    /**
+     * @var boolean
+     */
+    private $_compress = false;
 
     private int $_minSize = 0;
 
