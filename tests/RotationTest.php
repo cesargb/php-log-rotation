@@ -6,7 +6,7 @@ use LogicException;
 use Cesargb\Log\Rotation;
 use Cesargb\Log\Test\TestCase;
 
-class RotativeTest extends TestCase
+class RotationTest extends TestCase
 {
     public function test_log_rotating_if_file_not_exists()
     {

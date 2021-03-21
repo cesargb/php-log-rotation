@@ -2,7 +2,6 @@
 
 namespace Cesargb\Log\Test\Processors;
 
-use LogicException;
 use Cesargb\Log\Rotation;
 use Cesargb\Log\Test\TestCase;
 
@@ -24,11 +23,11 @@ class GzTest extends TestCase
 
         file_put_contents(self::DIR_WORK.'file.log', $content);
 
-        $rotated_file = $rotation->rotate(self::DIR_WORK.'file.log');
+        $rotation->then(function ($fileRotated) {
+            $this->assertEquals(self::DIR_WORK.'file.log.1.gz', $fileRotated);
+        })->rotate(self::DIR_WORK.'file.log');
 
         $this->assertStringEqualsFile(self::DIR_WORK.'file.log', '');
-
-        $this->assertEquals(self::DIR_WORK.'file.log.1.gz', $rotated_file);
 
         $this->assertFileExists(self::DIR_WORK.'file.log.1.gz');
 

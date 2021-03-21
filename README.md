@@ -17,24 +17,16 @@ composer require cesargb/php-log-rotation
 
 ## Usage
 
-This is an example:
-
 ```php
 use Cesargb\Log\Rotation;
 
 $rotation = new Rotation();
 
-// Rotate a file
-$rotation->rotate('file.log');
-
-// Log files are rotated 10 times before being removed, 366 default
-$rotation->files(30)->rotate('file.log');
-
-// Compress file rotated
-$rotation->compress()->rotate('file.log');
-
-// Log files are rotated only if they grow bigger then 1024 bytes
-$rotation->minSize(1024)->rotate('file.log');
+$rotation
+    ->compress() // Optional, compress the file after rotated
+    ->files(30) // Optional, files are rotated 30 times before being removed
+    ->minSize(1024) // Optional, are rotated when they grow bigger than 1024 bytes
+    ->rotate('file.log');
 ```
 
 ## Test

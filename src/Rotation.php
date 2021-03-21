@@ -3,8 +3,8 @@
 namespace Cesargb\Log;
 
 use Cesargb\Log\Compress\Gz;
-use LogicException;
 use Cesargb\Log\Processors\RotativeProcessor;
+use LogicException;
 
 class Rotation
 {
@@ -13,6 +13,8 @@ class Rotation
     private bool $_compress = false;
 
     private int $_minSize = 0;
+
+    private $thenCallback = null;
 
     public function __construct()
     {
@@ -60,15 +62,29 @@ class Rotation
     }
 
     /**
+     * Call function if roteted was sucessfull and pass
+     * the file as argument.
+     *
+     * @param callable $callable
+     * @return self
+     */
+    public function then(callable $callable): self
+    {
+        $this->thenCallback = $callable;
+
+        return $this;
+    }
+
+    /**
      * Rotate file
      *
      * @param string $file
-     * @return string|null
+     * @return boolean true if rotated was successful
      */
-    public function rotate(string $file): ?string
+    public function rotate(string $file): bool
     {
         if (!$this->canRotate($file)) {
-            return null;
+            return false;
         }
 
         $fileRotate = $this->moveContentToTempFile($file);
@@ -81,7 +97,11 @@ class Rotation
             $fileRotated = $gz->handler($fileRotated);
         }
 
-        return $fileRotated;
+        if ($fileRotated && $this->thenCallback) {
+            call_user_func($this->thenCallback, $fileRotated);
+        }
+
+        return ! empty($fileRotated);
     }
 
     /**
