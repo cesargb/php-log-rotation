@@ -7,58 +7,59 @@ class RotativeProcessor extends AbstractProcessor
     private $maxFiles = 366;
 
     /**
-     * Max num file rotate
+     * Log files are rotated count times before being removed
      *
-     * @param int $maxFiles
+     * @param int $count
      * @return self
      */
-    public function setMaxFiles(int $maxFiles): self
+    public function files(int $count): self
     {
-        $this->maxFiles = $maxFiles;
+        $this->maxFiles = $count;
 
         return $this;
     }
 
     public function handler($file): ?string
     {
-        $fileInfo = pathinfo($file);
+        $nextFile = "{$this->fileOriginal}.1";
 
-        $extension_in = $fileInfo['extension'] ?? '';
-
-        $fileInfo = pathinfo($this->fileOriginal);
-
-        $extension_original = $fileInfo['extension'] ?? '';
-
-        $glob = $fileInfo['dirname'].DIRECTORY_SEPARATOR.$fileInfo['filename'];
-
-        if (! empty($fileInfo['extension'])) {
-            $glob .= '.'.$fileInfo['extension'];
-        }
-
-        if ($extension_in != '' && $extension_in != $extension_original) {
-            $glob .= '.'.$extension_in;
-        }
-
-        $glob .= '.*';
-
-        $curFiles = glob($glob);
-
-        for ($n = count($curFiles); $n > 0; $n--) {
-            $file_to_move = str_replace('*', $n, $glob);
-
-            if (file_exists($file_to_move)) {
-                if ($this->maxFiles > 0 && $n >= $this->maxFiles) {
-                    unlink($file_to_move);
-                } else {
-                    rename($file_to_move, str_replace('*', $n + 1, $glob));
-                }
-            }
-        }
-
-        $nextFile = str_replace('*', '1', $glob);
+        $this->rotate();
 
         rename($file, $nextFile);
 
         return $this->processed($nextFile);
+    }
+
+    private function rotate(int $number = 1): string
+    {
+        $file = "{$this->fileOriginal}.{$number}{$this->suffix}";
+
+        if (!file_exists($file)) {
+            return "{$this->fileOriginal}.{$number}{$this->suffix}";
+        }
+
+        if ($this->maxFiles > 0 && $number >= $this->maxFiles ) {
+            if (file_exists($file)) {
+                unlink($file);
+            }
+
+            return "{$this->fileOriginal}.{$number}{$this->suffix}";
+        }
+
+        $nextFile = $this->rotate($number + 1);
+
+        rename($file, $nextFile);
+
+        return "{$this->fileOriginal}.{$number}{$this->suffix}";
+    }
+
+    private function getnumber(string $file): ?int
+    {
+        $fileName = basename($file);
+        $fileOriginaleName = basename($this->fileOriginal);
+
+        preg_match("/{$fileOriginaleName}.([0-9]+){$this->suffix}/", $fileName, $output);
+
+        return $output[1] ?? null;
     }
 }
