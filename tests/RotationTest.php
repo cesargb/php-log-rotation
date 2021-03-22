@@ -2,7 +2,7 @@
 
 namespace Cesargb\Log\Test;
 
-use LogicException;
+use Exception;
 use Cesargb\Log\Rotation;
 use Cesargb\Log\Test\TestCase;
 
@@ -10,7 +10,7 @@ class RotationTest extends TestCase
 {
     public function test_log_rotating_if_file_not_exists()
     {
-        $this->expectException(LogicException::class);
+        $this->expectException(Exception::class);
 
         $rotation = new Rotation();
 

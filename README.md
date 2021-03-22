@@ -26,6 +26,8 @@ $rotation
     ->compress() // Optional, compress the file after rotated
     ->files(30) // Optional, files are rotated 30 times before being removed
     ->minSize(1024) // Optional, are rotated when they grow bigger than 1024 bytes
+    ->then(function ($filename) {}) // Optional, to get filename rotated
+    ->catch(function ($exception) {}) // Optional, to catch a exception in rotating
     ->rotate('file.log');
 ```
 
