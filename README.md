@@ -25,15 +25,32 @@ use Cesargb\Log\Rotation;
 $rotation = new Rotation();
 
 $rotation
-    ->compress() // Optional, compress the file after rotated
-    ->files(30) // Optional, files are rotated 30 times before being removed
-    ->minSize(1024) // Optional, are rotated when they grow bigger than 1024 bytes
+    ->compress() // Optional, compress the file after rotated. Default false
+    ->files(30) // Optional, files are rotated 30 times before being removed. Default 366
+    ->minSize(1024) // Optional, are rotated when they grow bigger than 1024 bytes. Default 0
     ->then(function ($filename) {}) // Optional, to get filename rotated
     ->catch(function ($exception) {}) // Optional, to catch a exception in rotating
     ->rotate('file.log');
 ```
 
+Or you can define the options in the constructor
+
+```php
+use Cesargb\Log\Rotation;
+
+$rotation = new Rotation([
+    'files' => 1,
+    'compress' => true,
+    'min-size' => 10,
+    'then' => function ($filename) {},
+    'catch' => function ($error) {},
+]);
+
+$rotation->rotate('file.log');
+```
+
 ## Test
+
 Run test with:
 
 ```bash
