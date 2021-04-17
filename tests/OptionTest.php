@@ -2,7 +2,6 @@
 
 namespace Cesargb\Log\Test;
 
-use Exception;
 use Cesargb\Log\Rotation;
 use Cesargb\Log\Test\TestCase;
 
@@ -25,7 +24,7 @@ class OptionTest extends TestCase
     {
         $this->expectException(\LogicException::class);
 
-        $r = new Rotation([
+        new Rotation([
             'bad-method' => null,
         ]);
     }
