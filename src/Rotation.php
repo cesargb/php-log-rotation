@@ -8,6 +8,8 @@ use Exception;
 
 class Rotation
 {
+    use Optionable, ErrorHandler;
+
     private RotativeProcessor $processor;
 
     private bool $_compress = false;
@@ -16,13 +18,19 @@ class Rotation
 
     private $thenCallback = null;
 
-    private $errorHandler = null;
-
-    public function __construct()
+    public function __construct(array $options = [])
     {
         $this->processor = new RotativeProcessor();
 
-        $this->errorHandler = new ErrorHandler();
+        $this->methodsOptionables([
+            'compress',
+            'minSize',
+            'files',
+            'then',
+            'catch',
+        ]);
+
+        $this->options($options);
     }
 
     /**
@@ -41,11 +49,12 @@ class Rotation
     /**
      * Old versions of log files are compressed
      *
+     *@param bool $compress
      * @return self
      */
-    public function compress(): self
+    public function compress(bool $compress = true): self
     {
-        $this->_compress = true;
+        $this->_compress = $compress;
 
         $this->processor->compress();
 
@@ -80,19 +89,6 @@ class Rotation
     }
 
     /**
-     * Call function if roteted catch any Exception.
-     *
-     * @param callable $callable
-     * @return self
-     */
-    public function catch(callable $callable): self
-    {
-        $this->errorHandler->catch($callable);
-
-        return $this;
-    }
-
-    /**
      * Rotate file
      *
      * @param string $file
@@ -114,7 +110,7 @@ class Rotation
             try {
                 $fileRotated = $gz->handler($fileRotated);
             } catch (Exception $error) {
-                $this->errorHandler->exception($error);
+                $this->exception($error);
 
                 $fileRotated = null;
             }
@@ -157,7 +153,7 @@ class Rotation
     private function canRotate(string $file): bool
     {
         if (! $this->fileIsValid($file)) {
-            $this->errorHandler->exception(
+            $this->exception(
                 new Exception(sprintf('the file %s not is valid.', $file), 10)
             );
 
@@ -204,7 +200,7 @@ class Rotation
         $fd = fopen($file, 'r+');
 
         if (! $fd) {
-            $this->errorHandler->exception(
+            $this->exception(
                 new Exception(sprintf('the file %s not can open.', $file), 20)
             );
 
@@ -214,7 +210,7 @@ class Rotation
         if (! flock($fd, LOCK_EX)) {
             fclose($fd);
 
-            $this->errorHandler->exception(
+            $this->exception(
                 new Exception(sprintf('the file %s not can lock.', $file), 21)
             );
 
@@ -224,7 +220,7 @@ class Rotation
         if (! copy($file, $fileDestination)) {
             fclose($fd);
 
-            $this->errorHandler->exception(
+            $this->exception(
                 new Exception(
                     sprintf('the file %s not can copy to temp file %s.', $file, $fileDestination),
                     22
@@ -239,7 +235,7 @@ class Rotation
 
             unlink($fileDestination);
 
-            $this->errorHandler->exception(
+            $this->exception(
                 new Exception(sprintf('the file %s not can truncate.', $file), 23)
             );
 

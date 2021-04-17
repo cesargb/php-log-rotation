@@ -4,10 +4,16 @@ namespace Cesargb\Log;
 
 use Throwable;
 
-class ErrorHandler
+trait ErrorHandler
 {
     private $catchCallable = null;
 
+    /**
+     * Call function if roteted catch any Exception.
+     *
+     * @param callable $callable
+     * @return self
+     */
     public function catch(callable $callable): self
     {
         $this->catchCallable = $callable;
