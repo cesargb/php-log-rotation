@@ -173,7 +173,7 @@ class Rotation
 
         $fd = fopen($filename, 'r+');
 
-        if (!$fd) {
+        if ($fd === false) {
             $this->exception(
                 new Exception(sprintf('the file %s not can open.', $filename), 20)
             );
