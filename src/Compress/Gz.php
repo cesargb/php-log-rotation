@@ -6,34 +6,34 @@ use Exception;
 
 class Gz
 {
-    const EXTENSION_COMPRESS = 'gz';
+    public const EXTENSION_COMPRESS = 'gz';
 
-    public function handler($file): string
+    public function handler(string $filename): string
     {
-        $fileCompress = $file.'.'.self::EXTENSION_COMPRESS;
+        $filenameCompress = $filename.'.'.self::EXTENSION_COMPRESS;
 
-        $fd = fopen($file, 'r');
+        $fd = fopen($filename, 'r');
 
-        if (!$fd) {
-            throw new Exception("file {$file} not can read.", 100);
+        if ($fd === false) {
+            throw new Exception("file {$filename} not can read.", 100);
         }
 
-        $gz = gzopen($fileCompress, 'wb');
+        $gz = gzopen($filenameCompress, 'wb');
 
-        if (! $gz) {
+        if ($gz === false) {
             fclose($fd);
 
-            throw new Exception("file {$fileCompress} not can open.", 101);
+            throw new Exception("file {$filenameCompress} not can open.", 101);
         }
 
-        while (! feof($fd)) {
+        while (!feof($fd)) {
             gzwrite($gz, fread($fd, 1024 * 512));
         }
 
         gzclose($gz);
         fclose($fd);
-        unlink($file);
+        unlink($filename);
 
-        return $fileCompress;
+        return $filenameCompress;
     }
 }
