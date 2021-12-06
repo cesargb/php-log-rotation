@@ -93,25 +93,16 @@ class Rotation
             return false;
         }
 
-        $fileNameTemp = $this->moveContentToTempFile($filename);
+        $filenameRotated = $this->runProcessor(
+            $filename,
+            $this->moveContentToTempFile($filename)
+        );
 
-        $filenameRotated = $this->runProcessor($filename, $fileNameTemp);
+        $filenameRotated = is_null($filenameRotated)
+            ? $filenameRotated
+            : $this->runCompress($filenameRotated);
 
-        if ($filenameRotated && $this->_compress) {
-            $gz = new Gz();
-
-            try {
-                $filenameRotated = $gz->handler($filenameRotated);
-            } catch (Exception $error) {
-                $this->exception($error);
-
-                $filenameRotated = null;
-            }
-        }
-
-        if ($filenameRotated && $this->thenCallback) {
-            call_user_func($this->thenCallback, $filenameRotated, $filename);
-        }
+        $this->sucessfull($filename, $filenameRotated);
 
         return !empty($filenameRotated);
     }
@@ -128,6 +119,32 @@ class Rotation
         }
 
         return $this->processor->handler($filenameTarget);
+    }
+
+    private function runCompress(string $filename): ?string
+    {
+        if (!$this->_compress) {
+            return $filename;
+        }
+
+        $gz = new Gz();
+
+        try {
+            return $gz->handler($filename);
+        } catch (Exception $error) {
+            $this->exception($error);
+
+            return null;
+        }
+    }
+
+    private function sucessfull(string $filenameSource, ?string $filenameRotated): void
+    {
+        if (is_null($this->thenCallback) || is_null($filenameRotated)) {
+            return;
+        }
+
+        call_user_func($this->thenCallback, $filenameRotated, $filenameSource);
     }
 
     /**
