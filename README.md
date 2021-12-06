@@ -1,11 +1,13 @@
 
 # PHP class to logs rotation
+
 PHP Class to rotate log files
 
 This class permit log rotating with diferetne processor.
 
 [![tests](https://github.com/cesargb/php-log-rotation/workflows/tests/badge.svg)](https://github.com/cesargb/php-log-rotation/actions)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/cesargb/php-log-rotation.svg?style=flat-square&color=brightgreen)](https://packagist.org/packages/cesargb/php-log-rotation)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/cesargb/php-log-rotation/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/cesargb/php-log-rotation/?branch=master)
 
 Note: If you have the version 1 installed, [read this](https://github.com/cesargb/php-log-rotation/tree/v1).
 
@@ -28,7 +30,7 @@ $rotation
     ->compress() // Optional, compress the file after rotated. Default false
     ->files(30) // Optional, files are rotated 30 times before being removed. Default 366
     ->minSize(1024) // Optional, are rotated when they grow bigger than 1024 bytes. Default 0
-    ->then(function ($filename) {}) // Optional, to get filename rotated
+    ->then(function ($filenameTarget, $filenameRotated) {}) // Optional, to get filename target and original filename
     ->catch(function ($exception) {}) // Optional, to catch a exception in rotating
     ->rotate('file.log');
 ```
