@@ -7,10 +7,7 @@ class RotativeProcessor extends AbstractProcessor
     private $maxFiles = 366;
 
     /**
-     * Log files are rotated count times before being removed
-     *
-     * @param int $count
-     * @return self
+     * Log files are rotated count times before being removed.
      */
     public function files(int $count): self
     {
@@ -19,47 +16,37 @@ class RotativeProcessor extends AbstractProcessor
         return $this;
     }
 
-    public function handler($file): ?string
+    public function handler(string $filename): ?string
     {
-        $nextFile = "{$this->fileOriginal}.1";
+        $filenameTarget = "{$this->filenameSource}.1";
 
         $this->rotate();
 
-        rename($file, $nextFile);
+        rename($filename, $filenameTarget);
 
-        return $this->processed($nextFile);
+        return $this->processed($filenameTarget);
     }
 
     private function rotate(int $number = 1): string
     {
-        $file = "{$this->fileOriginal}.{$number}{$this->suffix}";
+        $filenameTarget = "{$this->filenameSource}.{$number}{$this->extension}";
 
-        if (!file_exists($file)) {
-            return "{$this->fileOriginal}.{$number}{$this->suffix}";
+        if (!file_exists($filenameTarget)) {
+            return $filenameTarget;
         }
 
-        if ($this->maxFiles > 0 && $number >= $this->maxFiles ) {
-            if (file_exists($file)) {
-                unlink($file);
+        if ($this->maxFiles > 0 && $number >= $this->maxFiles) {
+            if (file_exists($filenameTarget)) {
+                unlink($filenameTarget);
             }
 
-            return "{$this->fileOriginal}.{$number}{$this->suffix}";
+            return $filenameTarget;
         }
 
-        $nextFile = $this->rotate($number + 1);
+        $nextFilename = $this->rotate($number + 1);
 
-        rename($file, $nextFile);
+        rename($filenameTarget, $nextFilename);
 
-        return "{$this->fileOriginal}.{$number}{$this->suffix}";
-    }
-
-    private function getnumber(string $file): ?int
-    {
-        $fileName = basename($file);
-        $fileOriginaleName = basename($this->fileOriginal);
-
-        preg_match("/{$fileOriginaleName}.([0-9]+){$this->suffix}/", $fileName, $output);
-
-        return $output[1] ?? null;
+        return $filenameTarget;
     }
 }

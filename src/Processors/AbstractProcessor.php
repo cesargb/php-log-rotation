@@ -4,39 +4,36 @@ namespace Cesargb\Log\Processors;
 
 abstract class AbstractProcessor
 {
-    private string $fileOut;
+    protected string $filenameSource;
 
-    protected string $fileOriginal;
+    protected string $extension = '';
 
-    protected string $suffix = '';
-
-    abstract public function handler($file): ?string;
+    abstract public function handler(string $filename): ?string;
 
     public function __construct()
     {
         clearstatcache();
     }
 
-    public function compress(): void
+    public function addExtension(string $extension): void
     {
-        $this->suffix = '.gz';
+        $this->extension = '.'.$extension;
     }
 
-    public function setFileOriginal($fileOriginal): self
+    public function removeExtention(string $extension): void
     {
-        $this->fileOriginal = $fileOriginal;
+        $this->extension = str_replace('.'.$extension, '', $this->extension);
+    }
+
+    public function setFilenameSource($filenameSource): self
+    {
+        $this->filenameSource = $filenameSource;
 
         return $this;
     }
 
-    protected function processed($file): ?string
+    protected function processed(string $filename): ?string
     {
-        if (is_file($file)) {
-            $this->fileOut = $file;
-
-            return $this->fileOut;
-        }
-
-        return null;
+        return is_file($filename) ? $filename : null;
     }
 }
