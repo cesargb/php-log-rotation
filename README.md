@@ -44,7 +44,7 @@ $rotation = new Rotation([
     'files' => 1,
     'compress' => true,
     'min-size' => 10,
-    'then' => function ($filename) {},
+    'then' => function ($filenameTarget, $filenameRotated) {},
     'catch' => function ($error) {},
 ]);
 
