@@ -8,7 +8,8 @@ use Exception;
 
 class Rotation
 {
-    use Optionable, ErrorHandler;
+    use Optionable;
+    use ErrorHandler;
 
     private RotativeProcessor $processor;
 
@@ -34,10 +35,7 @@ class Rotation
     }
 
     /**
-     * Log files are rotated count times before being removed
-     *
-     * @param int $count
-     * @return self
+     * Log files are rotated count times before being removed.
      */
     public function files(int $count): self
     {
@@ -47,25 +45,23 @@ class Rotation
     }
 
     /**
-     * Old versions of log files are compressed
-     *
-     *@param bool $compress
-     * @return self
+     * Old versions of log files are compressed.
      */
     public function compress(bool $compress = true): self
     {
         $this->_compress = $compress;
 
-        $this->processor->compress();
+        if ($compress) {
+            $this->processor->addExtension('gz');
+        } else {
+            $this->processor->removeExtention('gz');
+        }
 
         return $this;
     }
 
     /**
-     * Log files are rotated when they grow bigger than size bytes
-     *
-     * @param integer $bytes
-     * @return self
+     * Log files are rotated when they grow bigger than size bytes.
      */
     public function minSize(int $bytes): self
     {
@@ -75,11 +71,9 @@ class Rotation
     }
 
     /**
-     * Call function if roteted was sucessfull and pass
-     * the file as argument.
-     *
-     * @param callable $callable
-     * @return self
+     * Function that will be executed when the rotation is successful.
+     * The first argument will be the name of the destination file and
+     * the second the name of the rotated file.
      */
     public function then(callable $callable): self
     {
@@ -89,140 +83,120 @@ class Rotation
     }
 
     /**
-     * Rotate file
+     * Rotate file.
      *
-     * @param string $file
-     * @return boolean true if rotated was successful
+     * @return bool true if rotated was successful
      */
-    public function rotate(string $file): bool
+    public function rotate(string $filename): bool
     {
-        if (!$this->canRotate($file)) {
+        if (!$this->canRotate($filename)) {
             return false;
         }
 
-        $fileRotate = $this->moveContentToTempFile($file);
+        $fileNameTemp = $this->moveContentToTempFile($filename);
 
-        $fileRotated = $this->runProcessor($file, $fileRotate);
+        $filenameRotated = $this->runProcessor($filename, $fileNameTemp);
 
-        if ($fileRotated && $this->_compress) {
+        if ($filenameRotated && $this->_compress) {
             $gz = new Gz();
 
             try {
-                $fileRotated = $gz->handler($fileRotated);
+                $filenameRotated = $gz->handler($filenameRotated);
             } catch (Exception $error) {
                 $this->exception($error);
 
-                $fileRotated = null;
+                $filenameRotated = null;
             }
-
         }
 
-        if ($fileRotated && $this->thenCallback) {
-            call_user_func($this->thenCallback, $fileRotated);
+        if ($filenameRotated && $this->thenCallback) {
+            call_user_func($this->thenCallback, $filenameRotated, $filename);
         }
 
-        return ! empty($fileRotated);
+        return !empty($filenameRotated);
     }
 
     /**
-     * Run processor
-     *
-     * @param string $originalFile
-     * @param string|null $fileRotated
-     * @return string|null
+     * Run processor.
      */
-    private function runProcessor(string $originalFile, ?string $fileRotated): ?string
+    private function runProcessor(string $filenameSource, ?string $filenameTarget): ?string
     {
-        $this->initProcessorFile($originalFile);
+        $this->initProcessorFile($filenameSource);
 
-        if (!$fileRotated) {
+        if (!$filenameTarget) {
             return null;
         }
 
-        $fileRotated = $this->processor->handler($fileRotated);
-
-        return $fileRotated;
+        return $this->processor->handler($filenameTarget);
     }
 
     /**
-     * check if file need rotate
-     *
-     * @param string $file
-     * @return boolean
+     * check if file need rotate.
      */
-    private function canRotate(string $file): bool
+    private function canRotate(string $filename): bool
     {
-        if (! $this->fileIsValid($file)) {
+        if (!$this->fileIsValid($filename)) {
             $this->exception(
-                new Exception(sprintf('the file %s not is valid.', $file), 10)
+                new Exception(sprintf('the file %s not is valid.', $filename), 10)
             );
 
             return false;
         }
 
-        return filesize($file) > ($this->_minSize > 0 ? $this->_minSize : 0);
+        return filesize($filename) > ($this->_minSize > 0 ? $this->_minSize : 0);
     }
 
     /**
-     * Set original File to processor
-     *
-     * @param string $file
-     * @return void
+     * Set original File to processor.
      */
-    private function initProcessorFile(string $file): void
+    private function initProcessorFile(string $filename): void
     {
-        $this->processor->setFileOriginal($file);
+        $this->processor->setFilenameSource($filename);
     }
 
     /**
-     * check if file is valid to rotate
-     *
-     * @param string|null $file
-     * @return boolean
+     * check if file is valid to rotate.
      */
-    private function fileIsValid(?string $file): bool
+    private function fileIsValid(?string $filename): bool
     {
-        return $file && is_file($file) && is_writable($file);
+        return $filename && is_file($filename) && is_writable($filename);
     }
 
     /**
-     * move data to temp file and truncate
-     *
-     * @param string $file
-     * @return string|null
+     * move data to temp file and truncate.
      */
-    private function moveContentToTempFile(string $file): ?string
+    private function moveContentToTempFile(string $filename): ?string
     {
         clearstatcache();
 
-        $fileDestination = tempnam(dirname($file), 'LOG');
+        $filenameTarget = tempnam(dirname($filename), 'LOG');
 
-        $fd = fopen($file, 'r+');
+        $fd = fopen($filename, 'r+');
 
-        if (! $fd) {
+        if (!$fd) {
             $this->exception(
-                new Exception(sprintf('the file %s not can open.', $file), 20)
+                new Exception(sprintf('the file %s not can open.', $filename), 20)
             );
 
             return null;
         }
 
-        if (! flock($fd, LOCK_EX)) {
+        if (!flock($fd, LOCK_EX)) {
             fclose($fd);
 
             $this->exception(
-                new Exception(sprintf('the file %s not can lock.', $file), 21)
+                new Exception(sprintf('the file %s not can lock.', $filename), 21)
             );
 
             return null;
         }
 
-        if (! copy($file, $fileDestination)) {
+        if (!copy($filename, $filenameTarget)) {
             fclose($fd);
 
             $this->exception(
                 new Exception(
-                    sprintf('the file %s not can copy to temp file %s.', $file, $fileDestination),
+                    sprintf('the file %s not can copy to temp file %s.', $filename, $filenameTarget),
                     22
                 )
             );
@@ -230,13 +204,13 @@ class Rotation
             return null;
         }
 
-        if (! ftruncate($fd, 0)) {
+        if (!ftruncate($fd, 0)) {
             fclose($fd);
 
-            unlink($fileDestination);
+            unlink($filenameTarget);
 
             $this->exception(
-                new Exception(sprintf('the file %s not can truncate.', $file), 23)
+                new Exception(sprintf('the file %s not can truncate.', $filename), 23)
             );
 
             return null;
@@ -248,6 +222,6 @@ class Rotation
 
         fclose($fd);
 
-        return $fileDestination;
+        return $filenameTarget;
     }
 }
