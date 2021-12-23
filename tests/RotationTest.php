@@ -2,16 +2,12 @@
 
 namespace Cesargb\Log\Test;
 
-use Exception;
 use Cesargb\Log\Rotation;
-use Cesargb\Log\Test\TestCase;
 
 class RotationTest extends TestCase
 {
-    public function test_log_rotating_if_file_not_exists()
+    public function testLogRotatingIfFileNotExists()
     {
-        $this->expectException(Exception::class);
-
         $rotation = new Rotation();
 
         $result = $rotation->rotate(self::DIR_WORK.'file.log');
@@ -19,7 +15,7 @@ class RotationTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function test_not_rotate_if_file_is_empty()
+    public function testNotRotateIfFileIsEmpty()
     {
         touch(self::DIR_WORK.'file.log');
 
@@ -32,7 +28,7 @@ class RotationTest extends TestCase
         $this->assertFileDoesNotExist(self::DIR_WORK.'file.log.1');
     }
 
-    public function test_option_nocompress()
+    public function testOptionNocompress()
     {
         file_put_contents(self::DIR_WORK.'file.log', microtime(true));
 
@@ -45,7 +41,7 @@ class RotationTest extends TestCase
         $this->assertFileExists(self::DIR_WORK.'file.log.1');
     }
 
-    public function test_option_compress()
+    public function testOptionCompress()
     {
         file_put_contents(self::DIR_WORK.'file.log', microtime(true));
 
@@ -56,7 +52,7 @@ class RotationTest extends TestCase
         $this->assertFileExists(self::DIR_WORK.'file.log.1.gz');
     }
 
-    public function test_option_files()
+    public function testOptionFiles()
     {
         $maxFiles = 5;
 
@@ -74,10 +70,9 @@ class RotationTest extends TestCase
         }
 
         $this->assertFileDoesNotExist(self::DIR_WORK.'file.log.'.($maxFiles + 1));
-
     }
 
-    public function test_option_files_only_one()
+    public function testOptionFilesOnlyOne()
     {
         $filesToCreate = 5;
 
@@ -95,7 +90,7 @@ class RotationTest extends TestCase
         $this->assertFileDoesNotExist(self::DIR_WORK.'file.log.2');
     }
 
-    public function test_option_minsize()
+    public function testOptionMinsize()
     {
         file_put_contents(self::DIR_WORK.'file.log', microtime(true));
 

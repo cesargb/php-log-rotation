@@ -154,6 +154,10 @@ class Rotation
      */
     private function canRotate(string $filename): bool
     {
+        if (!is_file($filename)) {
+            return false;
+        }
+
         if (!$this->fileIsValid($filename)) {
             $this->exception(
                 new Exception(sprintf('the file %s not is valid.', $filename), 10)
@@ -176,9 +180,9 @@ class Rotation
     /**
      * check if file is valid to rotate.
      */
-    private function fileIsValid(?string $filename): bool
+    private function fileIsValid(string $filename): bool
     {
-        return $filename && is_file($filename) && is_writable($filename);
+        return is_writable($filename);
     }
 
     /**

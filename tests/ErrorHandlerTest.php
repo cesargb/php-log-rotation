@@ -13,6 +13,9 @@ class ErrorHandlerTest extends TestCase
 
         $rotation = new Rotation();
 
+        touch(self::DIR_WORK.'/file.log');
+        chmod(self::DIR_WORK.'/file.log', 0444);
+
         $result = $rotation->rotate(self::DIR_WORK.'file.log');
 
         $this->assertFalse($result);
@@ -21,6 +24,9 @@ class ErrorHandlerTest extends TestCase
     public function testCatchException()
     {
         $rotation = new Rotation();
+
+        touch(self::DIR_WORK.'/file.log');
+        chmod(self::DIR_WORK.'/file.log', 0444);
 
         $result = $rotation
             ->catch(function (RotationFailed $exception) {
