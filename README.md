@@ -39,13 +39,14 @@ Or you can define the options in the constructor
 
 ```php
 use Cesargb\Log\Rotation;
+use Cesargb\Log\Exceptions\RotationFailed;
 
 $rotation = new Rotation([
     'files' => 1,
     'compress' => true,
     'min-size' => 10,
-    'then' => function ($filenameTarget, $filenameRotated) {},
-    'catch' => function ($error) {},
+    'then' => function ($filename) {},
+    'catch' => function (RotationFailed $exception) {},
 ]);
 
 $rotation->rotate('file.log');

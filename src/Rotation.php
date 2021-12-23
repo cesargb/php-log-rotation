@@ -89,6 +89,8 @@ class Rotation
      */
     public function rotate(string $filename): bool
     {
+        $this->setFilename($filename);
+
         if (!$this->canRotate($filename)) {
             return false;
         }

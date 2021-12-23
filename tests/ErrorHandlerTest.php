@@ -2,15 +2,14 @@
 
 namespace Cesargb\Log\Test;
 
-use Exception;
+use Cesargb\Log\Exceptions\RotationFailed;
 use Cesargb\Log\Rotation;
-use Cesargb\Log\Test\TestCase;
 
 class ErrorHandlerTest extends TestCase
 {
-    public function test_throws_exception()
+    public function testThrowsException()
     {
-        $this->expectException(Exception::class);
+        $this->expectException(RotationFailed::class);
 
         $rotation = new Rotation();
 
@@ -19,13 +18,16 @@ class ErrorHandlerTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function test_catch_exception()
+    public function testCatchException()
     {
         $rotation = new Rotation();
 
         $result = $rotation
-            ->catch(function ($error) {
-
+            ->catch(function (RotationFailed $exception) {
+                $this->assertEquals(
+                    self::DIR_WORK.'file.log',
+                    $exception->getFilename()
+                );
             })
             ->rotate(self::DIR_WORK.'file.log');
 
