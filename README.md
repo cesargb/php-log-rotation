@@ -23,6 +23,7 @@ composer require cesargb/php-log-rotation
 
 ```php
 use Cesargb\Log\Rotation;
+use Cesargb\Log\Exceptions\RotationFailed;
 
 $rotation = new Rotation();
 
@@ -31,7 +32,7 @@ $rotation
     ->files(30) // Optional, files are rotated 30 times before being removed. Default 366
     ->minSize(1024) // Optional, are rotated when they grow bigger than 1024 bytes. Default 0
     ->then(function ($filenameTarget, $filenameRotated) {}) // Optional, to get filename target and original filename
-    ->catch(function ($exception) {}) // Optional, to catch a exception in rotating
+    ->catch(function (RotationFailed $exception) {}) // Optional, to catch a exception in rotating
     ->rotate('file.log');
 ```
 
