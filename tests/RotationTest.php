@@ -28,15 +28,13 @@ class RotationTest extends TestCase
         $this->assertFileDoesNotExist(self::DIR_WORK.'file.log.1');
     }
 
-    public function testOptionNocompress()
+    public function testRotationDefault()
     {
         file_put_contents(self::DIR_WORK.'file.log', microtime(true));
 
         $rotation = new Rotation();
 
         $rotation->rotate(self::DIR_WORK.'file.log');
-
-        $this->assertStringEqualsFile(self::DIR_WORK.'file.log', '');
 
         $this->assertFileExists(self::DIR_WORK.'file.log.1');
     }
@@ -103,5 +101,31 @@ class RotationTest extends TestCase
         $rotation->minSize(1)->rotate(self::DIR_WORK.'file.log');
 
         $this->assertFileExists(self::DIR_WORK.'file.log.1');
+    }
+
+    public function testRotationTruncate()
+    {
+        file_put_contents(self::DIR_WORK.'file.log', microtime(true));
+
+        $rotation = new Rotation();
+
+        $rotation->truncate()->rotate(self::DIR_WORK.'file.log');
+
+        $this->assertStringEqualsFile(self::DIR_WORK.'file.log', '');
+
+        $this->assertFileExists(self::DIR_WORK.'file.log.1');
+    }
+
+    public function testOptionTruncateAndCompress()
+    {
+        file_put_contents(self::DIR_WORK.'file.log', microtime(true));
+
+        $rotation = new Rotation();
+
+        $rotation->compress()->truncate()->rotate(self::DIR_WORK.'file.log');
+
+        $this->assertStringEqualsFile(self::DIR_WORK.'file.log', '');
+
+        $this->assertFileExists(self::DIR_WORK.'file.log.1.gz');
     }
 }

@@ -3,16 +3,16 @@
 namespace Cesargb\Log\Test;
 
 use Cesargb\Log\Rotation;
-use Cesargb\Log\Test\TestCase;
 
 class OptionTest extends TestCase
 {
-    public function test_pass_options()
+    public function testPassOptions()
     {
         $rotation = new Rotation([
             'files' => 1,
             'compress' => true,
             'min-size' => 10,
+            'truncate' => false,
             'then' => function ($filename) {},
             'catch' => function ($error) {},
         ]);
@@ -20,7 +20,7 @@ class OptionTest extends TestCase
         $this->assertNotNull($rotation);
     }
 
-    public function test_catch_exceptio_if_method_is_not_permited()
+    public function testCatchExceptioIfMethodIsNotPermited()
     {
         $this->expectException(\LogicException::class);
 
