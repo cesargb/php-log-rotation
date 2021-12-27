@@ -31,6 +31,7 @@ $rotation
     ->compress() // Optional, compress the file after rotated. Default false
     ->files(30) // Optional, files are rotated 30 times before being removed. Default 366
     ->minSize(1024) // Optional, are rotated when they grow bigger than 1024 bytes. Default 0
+    ->truncate() // Optional, truncate the original log file in place after creating a copy, instead of moving the old log file.
     ->then(function ($filenameTarget, $filenameRotated) {}) // Optional, to get filename target and original filename
     ->catch(function (RotationFailed $exception) {}) // Optional, to catch a exception in rotating
     ->rotate('file.log');
@@ -46,6 +47,7 @@ $rotation = new Rotation([
     'files' => 1,
     'compress' => true,
     'min-size' => 10,
+    'truncate' => false,
     'then' => function ($filename) {},
     'catch' => function (RotationFailed $exception) {},
 ]);

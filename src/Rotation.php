@@ -17,6 +17,8 @@ class Rotation
 
     private int $_minSize = 0;
 
+    private bool $_truncate = false;
+
     private $thenCallback = null;
 
     public function __construct(array $options = [])
@@ -25,6 +27,7 @@ class Rotation
 
         $this->methodsOptionables([
             'compress',
+            'truncate',
             'minSize',
             'files',
             'then',
@@ -56,6 +59,20 @@ class Rotation
         } else {
             $this->processor->removeExtention('gz');
         }
+
+        return $this;
+    }
+
+    /**
+     * Truncate the original log file in place after creating a copy, instead of
+     * moving the old log file.
+     *
+     * It can be used when some program cannot be told to close its logfile and
+     * thus might continue writing (appending) to the previous log file forever.
+     */
+    public function truncate(bool $truncate = true): self
+    {
+        $this->_truncate = $truncate;
 
         return $this;
     }
@@ -95,18 +112,28 @@ class Rotation
             return false;
         }
 
-        $filenameRotated = $this->runProcessor(
+        $fileTemporary = $this->_truncate
+            ? $this->copyAndTruncate($filename)
+            : $this->move($filename);
+
+        if (is_null($fileTemporary)) {
+            return false;
+        }
+
+        $fileTarget = $this->runProcessor(
             $filename,
-            $this->moveContentToTempFile($filename)
+            $fileTemporary
         );
 
-        $filenameRotated = is_null($filenameRotated)
-            ? $filenameRotated
-            : $this->runCompress($filenameRotated);
+        if (is_null($fileTarget)) {
+            return false;
+        }
 
-        $this->sucessfull($filename, $filenameRotated);
+        $fileTarget = $this->runCompress($fileTarget);
 
-        return !empty($filenameRotated);
+        $this->sucessfull($filename, $fileTarget);
+
+        return true;
     }
 
     /**
@@ -186,9 +213,9 @@ class Rotation
     }
 
     /**
-     * move data to temp file and truncate.
+     * copy data to temp file and truncate.
      */
-    private function moveContentToTempFile(string $filename): ?string
+    private function copyAndTruncate(string $filename): ?string
     {
         clearstatcache();
 
@@ -244,6 +271,26 @@ class Rotation
         fflush($fd);
 
         fclose($fd);
+
+        return $filenameTarget;
+    }
+
+    private function move(string $filename): ?string
+    {
+        clearstatcache();
+
+        $filenameTarget = tempnam(dirname($filename), 'LOG');
+
+        if (!rename($filename, $filenameTarget)) {
+            $this->exception(
+                new Exception(
+                    sprintf('the file %s not can move to temp file %s.', $filename, $filenameTarget),
+                    22
+                )
+            );
+
+            return null;
+        }
 
         return $filenameTarget;
     }
