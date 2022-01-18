@@ -69,13 +69,19 @@ class RotativeProcessorTest extends TestCase
 
             file_put_contents(self::DIR_WORK.'error.log.1', $content);
 
+            $thenCalled = false;
+
             $rotation
-                ->then(function ($f1, $f2) {
+                ->then(function ($f1, $f2) use (&$thenCalled) {
                     $this->assertEquals($f1, self::DIR_WORK.'error.log.1.1');
                     $this->assertEquals($f2, self::DIR_WORK.'error.log.1');
+
+
+                    $thenCalled = true;
                 })
                 ->rotate(self::DIR_WORK.'error.log.1');
 
+            $this->assertTrue($thenCalled);
             $this->assertEquals($content, file_get_contents(self::DIR_WORK.'error.log.1.1'));
 
         }
