@@ -15,6 +15,7 @@ class OptionTest extends TestCase
             'truncate' => false,
             'then' => function ($filename) {},
             'catch' => function ($error) {},
+            'finally' => function ($message) {},
         ]);
 
         $this->assertNotNull($rotation);

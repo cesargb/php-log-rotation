@@ -32,6 +32,7 @@ class Rotation
             'files',
             'then',
             'catch',
+            'finally',
         ]);
 
         $this->options($options);
@@ -95,6 +96,16 @@ class Rotation
     public function then(callable $callable): self
     {
         $this->thenCallback = $callable;
+
+        return $this;
+    }
+
+    /**
+     * Function that will be executed when the process was finished.
+     */
+    public function finally(callable $callable): self
+    {
+        $this->finallyCallback = $callable;
 
         return $this;
     }
@@ -174,6 +185,8 @@ class Rotation
         }
 
         call_user_func($this->thenCallback, $filenameRotated, $filenameSource);
+
+        $this->finished($filenameRotated, 'sucessfull');
     }
 
     /**
@@ -182,6 +195,7 @@ class Rotation
     private function canRotate(string $filename): bool
     {
         if (!file_exists($filename)) {
+            $this->finished($filename, sprintf('the file %s not exists.', $filename));
             return false;
         }
 
