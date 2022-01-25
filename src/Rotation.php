@@ -181,7 +181,7 @@ class Rotation
      */
     private function canRotate(string $filename): bool
     {
-        if (!is_file($filename)) {
+        if (!file_exists($filename)) {
             return false;
         }
 
@@ -209,7 +209,7 @@ class Rotation
      */
     private function fileIsValid(string $filename): bool
     {
-        return is_writable($filename);
+        return is_file($filename) && is_writable($filename);
     }
 
     /**
