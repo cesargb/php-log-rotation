@@ -54,7 +54,7 @@ trait ErrorHandler
 
     private function sucessfull(string $filenameSource, ?string $filenameRotated): void
     {
-        $this->finished($filenameRotated, 'sucessfull');
+        $this->finished('sucessfull', $filenameSource);
 
         if (is_null($this->thenCallback) || is_null($filenameRotated)) {
             return;
@@ -65,7 +65,7 @@ trait ErrorHandler
 
     protected function exception(Throwable $exception): self
     {
-        $this->finished($this->_filename, $exception->getMessage());
+        $this->finished($exception->getMessage(), $this->_filename);
 
         if ($this->catchCallable) {
             call_user_func($this->catchCallable, $this->convertException($exception));
@@ -77,7 +77,7 @@ trait ErrorHandler
     }
 
 
-    protected function finished(string $filenameSource, string $message): void
+    protected function finished(string $message, ?string $filenameSource): void
     {
         if (is_null($this->finallyCallback)) {
             return;

@@ -160,7 +160,8 @@ class Rotation
     private function canRotate(string $filename): bool
     {
         if (!file_exists($filename)) {
-            $this->finished($filename, sprintf('the file %s not exists.', $filename));
+            $this->finished(sprintf('the file %s not exists.', $filename), $filename);
+
             return false;
         }
 
