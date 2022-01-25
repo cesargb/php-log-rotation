@@ -50,6 +50,7 @@ $rotation = new Rotation([
     'truncate' => false,
     'then' => function ($filename) {},
     'catch' => function (RotationFailed $exception) {},
+    'finally' => function ($message, $filename) {},
 ]);
 
 $rotation->rotate('file.log');

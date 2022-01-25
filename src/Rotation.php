@@ -19,8 +19,6 @@ class Rotation
 
     private bool $_truncate = false;
 
-    private $thenCallback = null;
-
     public function __construct(array $options = [])
     {
         $this->processor = new RotativeProcessor();
@@ -84,28 +82,6 @@ class Rotation
     public function minSize(int $bytes): self
     {
         $this->_minSize = $bytes;
-
-        return $this;
-    }
-
-    /**
-     * Function that will be executed when the rotation is successful.
-     * The first argument will be the name of the destination file and
-     * the second the name of the rotated file.
-     */
-    public function then(callable $callable): self
-    {
-        $this->thenCallback = $callable;
-
-        return $this;
-    }
-
-    /**
-     * Function that will be executed when the process was finished.
-     */
-    public function finally(callable $callable): self
-    {
-        $this->finallyCallback = $callable;
 
         return $this;
     }
@@ -176,17 +152,6 @@ class Rotation
 
             return null;
         }
-    }
-
-    private function sucessfull(string $filenameSource, ?string $filenameRotated): void
-    {
-        if (is_null($this->thenCallback) || is_null($filenameRotated)) {
-            return;
-        }
-
-        call_user_func($this->thenCallback, $filenameRotated, $filenameSource);
-
-        $this->finished($filenameRotated, 'sucessfull');
     }
 
     /**
