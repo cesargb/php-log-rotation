@@ -34,6 +34,7 @@ $rotation
     ->truncate() // Optional, truncate the original log file in place after creating a copy, instead of moving the old log file.
     ->then(function ($filenameTarget, $filenameRotated) {}) // Optional, to get filename target and original filename
     ->catch(function (RotationFailed $exception) {}) // Optional, to catch a exception in rotating
+    ->finally(function ($message, $filenameTarget) {}) // Optional, this method will be called when the process has finished
     ->rotate('file.log');
 ```
 
