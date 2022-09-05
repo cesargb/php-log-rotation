@@ -16,7 +16,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^7.4 || ^8.0"
+        "php": "^7.4 || ^8.0 || ^8.1"
     },
     "autoload": {
         "psr-4": {
