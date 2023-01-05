@@ -4,7 +4,7 @@ namespace Cesargb\Log\Processors;
 
 class RotativeProcessor extends AbstractProcessor
 {
-    private $maxFiles = 366;
+    private int $maxFiles = 366;
 
     /**
      * Log files are rotated count times before being removed.

@@ -19,6 +19,9 @@ class Rotation
 
     private bool $_truncate = false;
 
+    /**
+     * @param mixed[] $options
+     */
     public function __construct(array $options = [])
     {
         $this->processor = new RotativeProcessor();

@@ -7,7 +7,7 @@ use Cesargb\Log\Test\TestCase;
 
 class GzTest extends TestCase
 {
-    public function testRotationProcessorWithGzProcessor()
+    public function testRotationProcessorWithGzProcessor(): void
     {
         $rotation = new Rotation();
 
