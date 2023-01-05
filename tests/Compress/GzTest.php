@@ -31,6 +31,6 @@ class GzTest extends TestCase
 
         $this->assertFileExists(self::DIR_WORK.'file.log.1.gz');
 
-        $this->assertEquals($content, implode('', gzfile(self::DIR_WORK.'file.log.1.gz')));
+        $this->assertEquals($content, implode('', (array)gzfile(self::DIR_WORK.'file.log.1.gz')));
     }
 }

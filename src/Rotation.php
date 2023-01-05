@@ -204,6 +204,14 @@ class Rotation
 
         $filenameTarget = tempnam(dirname($filename), 'LOG');
 
+        if ($filenameTarget === false) {
+            $this->exception(
+                new Exception(sprintf('the file %s not can create temp file.', $filename), 19)
+            );
+
+            return null;
+        }
+
         $fd = fopen($filename, 'r+');
 
         if ($fd === false) {
@@ -263,6 +271,14 @@ class Rotation
         clearstatcache();
 
         $filenameTarget = tempnam(dirname($filename), 'LOG');
+
+        if ($filenameTarget === false) {
+            $this->exception(
+                new Exception(sprintf('the file %s not can create temp file.', $filename), 19)
+            );
+
+            return null;
+        }
 
         if (!rename($filename, $filenameTarget)) {
             $this->exception(

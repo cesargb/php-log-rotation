@@ -27,7 +27,11 @@ class Gz
         }
 
         while (!feof($fd)) {
-            gzwrite($gz, fread($fd, 1024 * 512));
+            $data = fread($fd, 1024 * 512);
+
+            $data = $data === false ? '' : $data;
+
+            gzwrite($gz, $data);
         }
 
         gzclose($gz);
