@@ -36,9 +36,7 @@ class RotativeProcessor extends AbstractProcessor
         }
 
         if ($this->maxFiles > 0 && $number >= $this->maxFiles) {
-            if (file_exists($filenameTarget)) {
-                unlink($filenameTarget);
-            }
+            unlink($filenameTarget);
 
             return $filenameTarget;
         }
