@@ -14,7 +14,7 @@ trait Optionable
     /**
      * Set options
      *
-     * @param string[] $options
+     * @param mixed[] $options
      * @throws LogicException
      * @return self
      */
