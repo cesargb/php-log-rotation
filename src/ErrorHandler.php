@@ -3,15 +3,16 @@
 namespace Cesargb\Log;
 
 use Cesargb\Log\Exceptions\RotationFailed;
+use Closure;
 use Throwable;
 
 trait ErrorHandler
 {
-    private $thenCallback = null;
+    private ?Closure $thenCallback = null;
 
-    private $catchCallable = null;
+    private ?Closure $catchCallable = null;
 
-    private $finallyCallback = null;
+    private ?Closure $finallyCallback = null;
 
     private ?string $_filename = null;
 

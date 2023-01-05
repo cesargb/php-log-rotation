@@ -1,8 +1,6 @@
 
 # PHP class to logs rotation
 
-PHP Class to rotate log files
-
 This PHP package allows you to rotate a log file and compress it.
 
 [![tests](https://github.com/cesargb/php-log-rotation/workflows/tests/badge.svg)](https://github.com/cesargb/php-log-rotation/actions)
