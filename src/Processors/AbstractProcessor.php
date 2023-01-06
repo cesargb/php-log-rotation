@@ -25,7 +25,7 @@ abstract class AbstractProcessor
         $this->extension = str_replace('.'.$extension, '', $this->extension);
     }
 
-    public function setFilenameSource($filenameSource): self
+    public function setFilenameSource(string $filenameSource): self
     {
         $this->filenameSource = $filenameSource;
 

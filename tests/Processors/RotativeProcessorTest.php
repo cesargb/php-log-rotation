@@ -7,7 +7,7 @@ use Cesargb\Log\Test\TestCase;
 
 class RotativeProcessorTest extends TestCase
 {
-    public function testRotationProcessor()
+    public function testRotationProcessor(): void
     {
         $maxFiles = 5;
 
@@ -29,7 +29,7 @@ class RotativeProcessorTest extends TestCase
         $this->assertFalse(is_file(self::DIR_WORK.'file.log.'.($maxFiles + 1)));
     }
 
-    public function testRotationProcessorWithGzProcessor()
+    public function testRotationProcessorWithGzProcessor(): void
     {
         $maxFiles = 5;
 

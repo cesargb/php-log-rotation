@@ -6,12 +6,15 @@ use LogicException;
 
 trait Optionable
 {
-    private $validMethods = [];
+    /**
+     * @var string[]
+     */
+    private array $validMethods = [];
 
     /**
      * Set options
      *
-     * @param array $options
+     * @param mixed[] $options
      * @throws LogicException
      * @return self
      */
@@ -24,6 +27,9 @@ trait Optionable
         return $this;
     }
 
+    /**
+     * @param string[] $methods
+     */
     protected function methodsOptionables(array $methods): self
     {
         $this->validMethods = $methods;
@@ -31,7 +37,7 @@ trait Optionable
         return $this;
     }
 
-    private function setMethod($key, $value)
+    private function setMethod(string $key, mixed $value): void
     {
         $method = $this->convert($key);
 

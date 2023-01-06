@@ -19,6 +19,9 @@ class Rotation
 
     private bool $_truncate = false;
 
+    /**
+     * @param mixed[] $options
+     */
     public function __construct(array $options = [])
     {
         $this->processor = new RotativeProcessor();
@@ -199,25 +202,15 @@ class Rotation
     {
         clearstatcache();
 
-        $filenameTarget = tempnam(dirname($filename), 'LOG');
+        $filenameTarget = $this->getTempFilename(dirname($filename));
 
-        $fd = fopen($filename, 'r+');
-
-        if ($fd === false) {
-            $this->exception(
-                new Exception(sprintf('the file %s not can open.', $filename), 20)
-            );
-
+        if (!$filenameTarget) {
             return null;
         }
 
-        if (!flock($fd, LOCK_EX)) {
-            fclose($fd);
+        $fd = $this->openFileWithLock($filename);
 
-            $this->exception(
-                new Exception(sprintf('the file %s not can lock.', $filename), 21)
-            );
-
+        if (!$fd) {
             return null;
         }
 
@@ -259,7 +252,11 @@ class Rotation
     {
         clearstatcache();
 
-        $filenameTarget = tempnam(dirname($filename), 'LOG');
+        $filenameTarget = $this->getTempFilename(dirname($filename));
+
+        if (!$filenameTarget) {
+            return null;
+        }
 
         if (!rename($filename, $filenameTarget)) {
             $this->exception(
@@ -273,5 +270,48 @@ class Rotation
         }
 
         return $filenameTarget;
+    }
+
+    private function getTempFilename(string $path): ?string
+    {
+        $filename = tempnam($path, 'LOG');
+
+        if ($filename === false) {
+            $this->exception(
+                new Exception(sprintf('the file %s not can create temp file.', $path), 19)
+            );
+
+            return null;
+        }
+
+        return $filename;
+    }
+
+    /**
+     * @return null|resource
+     */
+    private function openFileWithLock(string $filename)
+    {
+        $fd = fopen($filename, 'r+');
+
+        if ($fd === false) {
+            $this->exception(
+                new Exception(sprintf('the file %s not can open.', $filename), 20)
+            );
+
+            return null;
+        }
+
+        if (!flock($fd, LOCK_EX)) {
+            fclose($fd);
+
+            $this->exception(
+                new Exception(sprintf('the file %s not can lock.', $filename), 21)
+            );
+
+            return null;
+        }
+
+        return $fd;
     }
 }

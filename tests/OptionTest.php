@@ -6,7 +6,7 @@ use Cesargb\Log\Rotation;
 
 class OptionTest extends TestCase
 {
-    public function testPassOptions()
+    public function testPassOptions(): void
     {
         $rotation = new Rotation([
             'files' => 1,
@@ -21,7 +21,7 @@ class OptionTest extends TestCase
         $this->assertNotNull($rotation);
     }
 
-    public function testCatchExceptioIfMethodIsNotPermited()
+    public function testCatchExceptionIfMethodIsNotPermitted(): void
     {
         $this->expectException(\LogicException::class);
 

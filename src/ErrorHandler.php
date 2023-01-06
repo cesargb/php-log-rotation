@@ -21,7 +21,7 @@ trait ErrorHandler
      * The first argument will be the name of the destination file and
      * the second the name of the rotated file.
      */
-    public function then(callable $callable): self
+    public function then(Closure $callable): self
     {
         $this->thenCallback = $callable;
 
@@ -31,7 +31,7 @@ trait ErrorHandler
     /**
      * Call function if roteted catch any Exception.
      */
-    public function catch(callable $callable): self
+    public function catch(Closure $callable): self
     {
         $this->catchCallable = $callable;
 
@@ -41,7 +41,7 @@ trait ErrorHandler
     /**
      * Function that will be executed when the process was finished.
      */
-    public function finally(callable $callable): self
+    public function finally(Closure $callable): self
     {
         $this->finallyCallback = $callable;
 

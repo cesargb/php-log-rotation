@@ -17,7 +17,11 @@ class TestCase extends PHPUnitTestCase
 
     public function tearDown(): void
     {
-        $files = array_diff(scandir(self::DIR_WORK), ['.', '..']);
+        $scandir = scandir(self::DIR_WORK);
+
+        $scandir = $scandir === false ? [] : $scandir;
+
+        $files = array_diff($scandir, ['.', '..']);
 
         foreach ($files as $file) {
             unlink(self::DIR_WORK.'/'.$file);
