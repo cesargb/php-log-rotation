@@ -20,7 +20,7 @@ abstract class AbstractProcessor
         $this->extension = '.'.$extension;
     }
 
-    public function removeExtention(string $extension): void
+    public function removeExtension(string $extension): void
     {
         $this->extension = str_replace('.'.$extension, '', $this->extension);
     }

@@ -53,9 +53,9 @@ trait ErrorHandler
         $this->_filename = $filename;
     }
 
-    private function sucessfull(string $filenameSource, ?string $filenameRotated): void
+    private function successful(string $filenameSource, ?string $filenameRotated): void
     {
-        $this->finished('sucessfull', $filenameSource);
+        $this->finished('successful', $filenameSource);
 
         if (is_null($this->thenCallback) || is_null($filenameRotated)) {
             return;
