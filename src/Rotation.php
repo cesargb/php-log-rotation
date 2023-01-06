@@ -11,9 +11,12 @@ class Rotation
     use Optionable;
     use ErrorHandler;
 
+    private const COMPRESS_DEFAULT_LEVEL = null;
+
     private RotativeProcessor $processor;
 
     private bool $_compress = false;
+    private ?int $_compressLevel = self::COMPRESS_DEFAULT_LEVEL;
 
     private int $_minSize = 0;
 
@@ -52,11 +55,14 @@ class Rotation
     /**
      * Old versions of log files are compressed.
      */
-    public function compress(bool $compress = true): self
+    public function compress(bool|int $level = true): self
     {
-        $this->_compress = $compress;
+        $this->_compress = (bool)($level);
+        $this->_compressLevel = is_numeric($level)
+            ? $level
+            : self::COMPRESS_DEFAULT_LEVEL;
 
-        if ($compress) {
+        if ($this->_compress) {
             $this->processor->addExtension('gz');
         } else {
             $this->processor->removeExtention('gz');
@@ -149,7 +155,7 @@ class Rotation
         $gz = new Gz();
 
         try {
-            return $gz->handler($filename);
+            return $gz->handler($filename, $this->_compressLevel);
         } catch (Exception $error) {
             $this->exception($error);
 

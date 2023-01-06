@@ -8,7 +8,7 @@ class Gz
 {
     public const EXTENSION_COMPRESS = 'gz';
 
-    public function handler(string $filename): string
+    public function handler(string $filename, ?int $level = null): string
     {
         $filenameCompress = $filename.'.'.self::EXTENSION_COMPRESS;
 
@@ -18,7 +18,9 @@ class Gz
             throw new Exception("file {$filename} not can read.", 100);
         }
 
-        $gz = gzopen($filenameCompress, 'wb');
+        $level = $level ?? '';
+
+        $gz = gzopen($filenameCompress, "wb{$level}");
 
         if ($gz === false) {
             fclose($fd);

@@ -27,7 +27,7 @@ use Cesargb\Log\Exceptions\RotationFailed;
 $rotation = new Rotation();
 
 $rotation
-    ->compress() // Optional, compress the file after rotated. Default false
+    ->compress() // Optional, compress the file after rotated. Accept level compression argument.
     ->files(30) // Optional, files are rotated 30 times before being removed. Default 366
     ->minSize(1024) // Optional, are rotated when they grow bigger than 1024 bytes. Default 0
     ->truncate() // Optional, truncate the original log file in place after creating a copy, instead of moving the old log file.
@@ -45,7 +45,7 @@ use Cesargb\Log\Exceptions\RotationFailed;
 
 $rotation = new Rotation([
     'files' => 1,
-    'compress' => true,
+    'compress' => true, // Set level compression or true to default level. Default false
     'min-size' => 10,
     'truncate' => false,
     'then' => function ($filename) {},

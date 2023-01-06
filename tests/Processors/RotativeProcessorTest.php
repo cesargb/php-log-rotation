@@ -20,8 +20,6 @@ class RotativeProcessorTest extends TestCase
             $rotation->rotate(self::DIR_WORK.'file.log');
         }
 
-        // $this->assertStringEqualsFile(self::DIR_WORK.'file.log', '');
-
         foreach (range(1, $maxFiles) as $n) {
             $this->assertFileExists(self::DIR_WORK.'file.log.'.$n);
         }
@@ -43,8 +41,6 @@ class RotativeProcessorTest extends TestCase
             $rotation->rotate(self::DIR_WORK.'file.log');
         }
 
-        // $this->assertStringEqualsFile(self::DIR_WORK.'file.log', '');
-
         foreach (range(1, $maxFiles) as $n) {
             $this->assertFileExists(self::DIR_WORK."file.log.{$n}.gz");
         }
@@ -52,5 +48,42 @@ class RotativeProcessorTest extends TestCase
         $numeralCleaned = $maxFiles + 1;
 
         $this->assertFalse(is_file(self::DIR_WORK."file.log.{$numeralCleaned}.gz"));
+    }
+
+    public function testRotationProcessorWithGzProcessorWithLevel(): void
+    {
+        $tests = [
+            [
+                'level' => 0,
+                'assert' => 'assertStringEndsNotWith',
+            ],
+            [
+                'level' => false,
+                'assert' => 'assertStringEndsNotWith',
+            ],
+            [
+                'level' => true,
+                'assert' => 'assertStringEndsWith',
+            ],
+            [
+                'level' => 5,
+                'assert' => 'assertStringEndsWith',
+            ],
+        ];
+
+        $rotation = new Rotation();
+
+        foreach ($tests as $test) {
+            $level = $test['level'];
+            $assert = $test['assert'];
+            file_put_contents(self::DIR_WORK.'file.log', microtime(true));
+
+            $rotation->compress($level)->then(function ($fileRotated) use ($assert) {
+                $this->{$assert}('gz', $fileRotated);
+            })->rotate(self::DIR_WORK.'file.log');
+        }
+
+
+
     }
 }
