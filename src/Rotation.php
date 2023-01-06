@@ -65,7 +65,7 @@ class Rotation
         if ($this->_compress) {
             $this->processor->addExtension('gz');
         } else {
-            $this->processor->removeExtention('gz');
+            $this->processor->removeExtension('gz');
         }
 
         return $this;
@@ -127,7 +127,7 @@ class Rotation
 
         $fileTarget = $this->runCompress($fileTarget);
 
-        $this->sucessfull($filename, $fileTarget);
+        $this->successful($filename, $fileTarget);
 
         return true;
     }
