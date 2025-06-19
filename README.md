@@ -56,6 +56,15 @@ $rotation = new Rotation([
 $rotation->rotate('file.log');
 ```
 
+## Example: Using with crontab
+
+To automatically rotate your logs every day at 12:01 AM, add the following line to your crontab:
+
+```crontab
+1 0 * * * /usr/bin/php /path/to/your/log-rotation-script.php
+```
+
+
 ## Test
 
 Run test with:
