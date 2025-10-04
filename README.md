@@ -6,7 +6,6 @@ This PHP package allows you to rotate a log file and compress it.
 [![tests](https://github.com/cesargb/php-log-rotation/workflows/tests/badge.svg)](https://github.com/cesargb/php-log-rotation/actions)
 [![phpstan](https://github.com/cesargb/php-log-rotation/actions/workflows/phpstan.yml/badge.svg)](https://github.com/cesargb/php-log-rotation/actions/workflows/phpstan.yml)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/cesargb/php-log-rotation.svg?style=flat-square&color=brightgreen)](https://packagist.org/packages/cesargb/php-log-rotation)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/cesargb/php-log-rotation/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/cesargb/php-log-rotation/?branch=master)
 
 Note: If you have the version 1 installed, [read this](https://github.com/cesargb/php-log-rotation/tree/v1).
 
