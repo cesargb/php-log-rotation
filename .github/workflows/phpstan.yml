@@ -18,7 +18,9 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: 8.5
-        tools: phpstan
+
+    - name: Install composer dependencies
+      uses: ramsey/composer-install@v3
 
     - name: Run analyse phpstan
-      run: phpstan analyse --error-format github
+      run: ./vendor/bin/phpstan analyse --error-format github
