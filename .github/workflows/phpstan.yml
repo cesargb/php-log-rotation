@@ -3,8 +3,16 @@ name: phpstan
 on:
   push:
     branches: [master]
+    paths:
+      - '**.php'
+      - 'phpstan.neon.dist'
+      - '.github/workflows/phpstan.yml'
   pull_request:
     branches: [master]
+    paths:
+      - '**.php'
+      - 'phpstan.neon.dist'
+      - '.github/workflows/phpstan.yml'
 
 jobs:
   phpstan:
