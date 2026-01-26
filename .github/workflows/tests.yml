@@ -1,6 +1,18 @@
 name: tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [master]
+    paths:
+      - '**.php'
+      - 'phpunit.xml.dist'
+      - '.github/workflows/tests.yml'
+  pull_request:
+    branches: [master]
+    paths:
+      - '**.php'
+      - 'phpunit.xml.dist'
+      - '.github/workflows/tests.yml'
 
 jobs:
     run-tests:
