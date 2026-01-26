@@ -12,17 +12,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: 8.3
-
-    - name: Install dependencies
-      run: |
-        composer install
-        composer dump
+        php-version: 8.5
+        tools: phpstan
 
     - name: Run analyse phpstan
-      run: vendor/bin/phpstan analyse --error-format github
+      run: phpstan analyse --error-format github
