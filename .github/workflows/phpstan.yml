@@ -28,7 +28,7 @@ jobs:
         php-version: 8.5
 
     - name: Install composer dependencies
-      uses: ramsey/composer-install@v3
+      uses: ramsey/composer-install@v4
 
     - name: Run analyse phpstan
       run: ./vendor/bin/phpstan analyse --error-format github
