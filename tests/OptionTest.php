@@ -8,7 +8,9 @@ class OptionTest extends TestCase
 {
     public function testPassOptions(): void
     {
-        $rotation = new Rotation([
+        $this->expectNotToPerformAssertions();
+
+        new Rotation([
             'files' => 1,
             'compress' => true,
             'min-size' => 10,
@@ -17,8 +19,6 @@ class OptionTest extends TestCase
             'catch' => function ($error) {},
             'finally' => function ($message) {},
         ]);
-
-        $this->assertNotNull($rotation);
     }
 
     public function testCatchExceptionIfMethodIsNotPermitted(): void
