@@ -14,9 +14,9 @@ trait Optionable
     /**
      * Set options
      *
-     * @param mixed[] $options
+     * @param  mixed[]  $options
+     *
      * @throws LogicException
-     * @return self
      */
     public function options(array $options): self
     {
@@ -28,7 +28,7 @@ trait Optionable
     }
 
     /**
-     * @param string[] $methods
+     * @param  string[]  $methods
      */
     protected function methodsOptionables(array $methods): self
     {
@@ -58,6 +58,4 @@ trait Optionable
             )
         );
     }
-
-
 }

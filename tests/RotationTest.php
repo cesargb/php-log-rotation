@@ -6,20 +6,20 @@ use Cesargb\Log\Rotation;
 
 class RotationTest extends TestCase
 {
-    public function testLogRotatingIfFileNotExists(): void
+    public function test_log_rotating_if_file_not_exists(): void
     {
-        $rotation = new Rotation();
+        $rotation = new Rotation;
 
         $result = $rotation->rotate(self::DIR_WORK.'file.log');
 
         $this->assertFalse($result);
     }
 
-    public function testNotRotateIfFileIsEmpty(): void
+    public function test_not_rotate_if_file_is_empty(): void
     {
         touch(self::DIR_WORK.'file.log');
 
-        $rotation = new Rotation();
+        $rotation = new Rotation;
 
         $rotation->rotate(self::DIR_WORK.'file.log');
 
@@ -28,33 +28,33 @@ class RotationTest extends TestCase
         $this->assertFileDoesNotExist(self::DIR_WORK.'file.log.1');
     }
 
-    public function testRotationDefault(): void
+    public function test_rotation_default(): void
     {
         file_put_contents(self::DIR_WORK.'file.log', microtime(true));
 
-        $rotation = new Rotation();
+        $rotation = new Rotation;
 
         $rotation->rotate(self::DIR_WORK.'file.log');
 
         $this->assertFileExists(self::DIR_WORK.'file.log.1');
     }
 
-    public function testOptionCompress(): void
+    public function test_option_compress(): void
     {
         file_put_contents(self::DIR_WORK.'file.log', microtime(true));
 
-        $rotation = new Rotation();
+        $rotation = new Rotation;
 
         $rotation->compress()->rotate(self::DIR_WORK.'file.log');
 
         $this->assertFileExists(self::DIR_WORK.'file.log.1.gz');
     }
 
-    public function testOptionFiles(): void
+    public function test_option_files(): void
     {
         $maxFiles = 5;
 
-        $rotation = new Rotation();
+        $rotation = new Rotation;
 
         $rotation->files(5);
 
@@ -70,11 +70,11 @@ class RotationTest extends TestCase
         $this->assertFileDoesNotExist(self::DIR_WORK.'file.log.'.($maxFiles + 1));
     }
 
-    public function testOptionFilesOnlyOne(): void
+    public function test_option_files_only_one(): void
     {
         $filesToCreate = 5;
 
-        $rotation = new Rotation();
+        $rotation = new Rotation;
 
         $rotation->files(1);
 
@@ -88,11 +88,11 @@ class RotationTest extends TestCase
         $this->assertFileDoesNotExist(self::DIR_WORK.'file.log.2');
     }
 
-    public function testOptionMinsize(): void
+    public function test_option_minsize(): void
     {
         file_put_contents(self::DIR_WORK.'file.log', microtime(true));
 
-        $rotation = new Rotation();
+        $rotation = new Rotation;
 
         $rotation->minSize(1000)->rotate(self::DIR_WORK.'file.log');
 
@@ -103,11 +103,11 @@ class RotationTest extends TestCase
         $this->assertFileExists(self::DIR_WORK.'file.log.1');
     }
 
-    public function testRotationTruncate(): void
+    public function test_rotation_truncate(): void
     {
         file_put_contents(self::DIR_WORK.'file.log', microtime(true));
 
-        $rotation = new Rotation();
+        $rotation = new Rotation;
 
         $rotation->truncate()->rotate(self::DIR_WORK.'file.log');
 
@@ -116,11 +116,11 @@ class RotationTest extends TestCase
         $this->assertFileExists(self::DIR_WORK.'file.log.1');
     }
 
-    public function testOptionTruncateAndCompress(): void
+    public function test_option_truncate_and_compress(): void
     {
         file_put_contents(self::DIR_WORK.'file.log', microtime(true));
 
-        $rotation = new Rotation();
+        $rotation = new Rotation;
 
         $rotation->compress()->truncate()->rotate(self::DIR_WORK.'file.log');
 

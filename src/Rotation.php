@@ -8,14 +8,15 @@ use Exception;
 
 class Rotation
 {
-    use Optionable;
     use ErrorHandler;
+    use Optionable;
 
     private const COMPRESS_DEFAULT_LEVEL = null;
 
     private RotativeProcessor $processor;
 
     private bool $_compress = false;
+
     private ?int $_compressLevel = self::COMPRESS_DEFAULT_LEVEL;
 
     private int $_minSize = 0;
@@ -23,11 +24,11 @@ class Rotation
     private bool $_truncate = false;
 
     /**
-     * @param mixed[] $options
+     * @param  mixed[]  $options
      */
     public function __construct(array $options = [])
     {
-        $this->processor = new RotativeProcessor();
+        $this->processor = new RotativeProcessor;
 
         $this->methodsOptionables([
             'compress',
@@ -57,7 +58,7 @@ class Rotation
      */
     public function compress(bool|int $level = true): self
     {
-        $this->_compress = (bool)($level);
+        $this->_compress = (bool) ($level);
         $this->_compressLevel = is_numeric($level)
             ? $level
             : self::COMPRESS_DEFAULT_LEVEL;
@@ -104,7 +105,7 @@ class Rotation
     {
         $this->setFilename($filename);
 
-        if (!$this->canRotate($filename)) {
+        if (! $this->canRotate($filename)) {
             return false;
         }
 
@@ -139,7 +140,7 @@ class Rotation
     {
         $this->initProcessorFile($filenameSource);
 
-        if (!$filenameTarget) {
+        if (! $filenameTarget) {
             return null;
         }
 
@@ -148,11 +149,11 @@ class Rotation
 
     private function runCompress(string $filename): ?string
     {
-        if (!$this->_compress) {
+        if (! $this->_compress) {
             return $filename;
         }
 
-        $gz = new Gz();
+        $gz = new Gz;
 
         try {
             return $gz->handler($filename, $this->_compressLevel);
@@ -168,13 +169,13 @@ class Rotation
      */
     private function canRotate(string $filename): bool
     {
-        if (!file_exists($filename)) {
+        if (! file_exists($filename)) {
             $this->finished(sprintf('the file %s not exists.', $filename), $filename);
 
             return false;
         }
 
-        if (!$this->fileIsValid($filename)) {
+        if (! $this->fileIsValid($filename)) {
             $this->exception(
                 new Exception(sprintf('the file %s not is valid.', $filename), 10)
             );
@@ -210,17 +211,17 @@ class Rotation
 
         $filenameTarget = $this->getTempFilename(dirname($filename));
 
-        if (!$filenameTarget) {
+        if (! $filenameTarget) {
             return null;
         }
 
         $fd = $this->openFileWithLock($filename);
 
-        if (!$fd) {
+        if (! $fd) {
             return null;
         }
 
-        if (!copy($filename, $filenameTarget)) {
+        if (! copy($filename, $filenameTarget)) {
             fclose($fd);
 
             $this->exception(
@@ -233,7 +234,7 @@ class Rotation
             return null;
         }
 
-        if (!ftruncate($fd, 0)) {
+        if (! ftruncate($fd, 0)) {
             fclose($fd);
 
             unlink($filenameTarget);
@@ -260,11 +261,11 @@ class Rotation
 
         $filenameTarget = $this->getTempFilename(dirname($filename));
 
-        if (!$filenameTarget) {
+        if (! $filenameTarget) {
             return null;
         }
 
-        if (!rename($filename, $filenameTarget)) {
+        if (! rename($filename, $filenameTarget)) {
             $this->exception(
                 new Exception(
                     sprintf('the file %s not can move to temp file %s.', $filename, $filenameTarget),
@@ -308,7 +309,7 @@ class Rotation
             return null;
         }
 
-        if (!flock($fd, LOCK_EX)) {
+        if (! flock($fd, LOCK_EX)) {
             fclose($fd);
 
             $this->exception(

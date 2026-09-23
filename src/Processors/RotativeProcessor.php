@@ -31,7 +31,7 @@ class RotativeProcessor extends AbstractProcessor
     {
         $filenameTarget = "{$this->filenameSource}.{$number}{$this->extension}";
 
-        if (!file_exists($filenameTarget)) {
+        if (! file_exists($filenameTarget)) {
             return $filenameTarget;
         }
 

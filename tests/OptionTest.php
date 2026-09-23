@@ -6,7 +6,7 @@ use Cesargb\Log\Rotation;
 
 class OptionTest extends TestCase
 {
-    public function testPassOptions(): void
+    public function test_pass_options(): void
     {
         $this->expectNotToPerformAssertions();
 
@@ -21,7 +21,7 @@ class OptionTest extends TestCase
         ]);
     }
 
-    public function testCatchExceptionIfMethodIsNotPermitted(): void
+    public function test_catch_exception_if_method_is_not_permitted(): void
     {
         $this->expectException(\LogicException::class);
 
