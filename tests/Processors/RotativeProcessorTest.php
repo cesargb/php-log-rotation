@@ -7,11 +7,11 @@ use Cesargb\Log\Test\TestCase;
 
 class RotativeProcessorTest extends TestCase
 {
-    public function testRotationProcessor(): void
+    public function test_rotation_processor(): void
     {
         $maxFiles = 5;
 
-        $rotation = new Rotation();
+        $rotation = new Rotation;
 
         $rotation->files(5);
 
@@ -27,11 +27,11 @@ class RotativeProcessorTest extends TestCase
         $this->assertFalse(is_file(self::DIR_WORK.'file.log.'.($maxFiles + 1)));
     }
 
-    public function testRotationProcessorWithGzProcessor(): void
+    public function test_rotation_processor_with_gz_processor(): void
     {
         $maxFiles = 5;
 
-        $rotation = new Rotation();
+        $rotation = new Rotation;
 
         $rotation->compress()->files(5);
 
@@ -50,7 +50,7 @@ class RotativeProcessorTest extends TestCase
         $this->assertFalse(is_file(self::DIR_WORK."file.log.{$numeralCleaned}.gz"));
     }
 
-    public function testRotationProcessorWithGzProcessorWithLevel(): void
+    public function test_rotation_processor_with_gz_processor_with_level(): void
     {
         $tests = [
             [
@@ -71,7 +71,7 @@ class RotativeProcessorTest extends TestCase
             ],
         ];
 
-        $rotation = new Rotation();
+        $rotation = new Rotation;
 
         foreach ($tests as $test) {
             $level = $test['level'];
@@ -82,8 +82,6 @@ class RotativeProcessorTest extends TestCase
                 $this->{$assert}('gz', $fileRotated);
             })->rotate(self::DIR_WORK.'file.log');
         }
-
-
 
     }
 }

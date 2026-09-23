@@ -28,7 +28,7 @@ class Gz
             throw new Exception("file {$filenameCompress} not can open.", 101);
         }
 
-        while (!feof($fd)) {
+        while (! feof($fd)) {
             $data = fread($fd, 1024 * 512);
 
             $data = $data === false ? '' : $data;

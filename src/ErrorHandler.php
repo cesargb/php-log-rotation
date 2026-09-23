@@ -77,7 +77,6 @@ trait ErrorHandler
         return $this;
     }
 
-
     protected function finished(string $message, ?string $filenameSource): void
     {
         if (is_null($this->finallyCallback)) {

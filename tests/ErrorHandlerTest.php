@@ -7,11 +7,11 @@ use Cesargb\Log\Rotation;
 
 class ErrorHandlerTest extends TestCase
 {
-    public function testCallThenIfRotateWasSuccessful(): void
+    public function test_call_then_if_rotate_was_successful(): void
     {
         file_put_contents(self::DIR_WORK.'file.log', microtime(true));
 
-        $rotation = new Rotation();
+        $rotation = new Rotation;
 
         $thenCalled = false;
 
@@ -22,9 +22,9 @@ class ErrorHandlerTest extends TestCase
         $this->assertTrue($thenCalled);
     }
 
-    public function testNotCallThenIfRotateNotWasSuccessful(): void
+    public function test_not_call_then_if_rotate_not_was_successful(): void
     {
-        $rotation = new Rotation();
+        $rotation = new Rotation;
 
         $thenCalled = false;
 
@@ -35,11 +35,11 @@ class ErrorHandlerTest extends TestCase
         $this->assertFalse($thenCalled);
     }
 
-    public function testThrowsException(): void
+    public function test_throws_exception(): void
     {
         $this->expectException(RotationFailed::class);
 
-        $rotation = new Rotation();
+        $rotation = new Rotation;
 
         touch(self::DIR_WORK.'/file.log');
         chmod(self::DIR_WORK.'/file.log', 0444);
@@ -49,9 +49,9 @@ class ErrorHandlerTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function testCatchException(): void
+    public function test_catch_exception(): void
     {
-        $rotation = new Rotation();
+        $rotation = new Rotation;
 
         touch(self::DIR_WORK.'/file.log');
         chmod(self::DIR_WORK.'/file.log', 0444);
@@ -68,11 +68,11 @@ class ErrorHandlerTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function testCallFinallyIfRotateWasSuccessful(): void
+    public function test_call_finally_if_rotate_was_successful(): void
     {
         file_put_contents(self::DIR_WORK.'file.log', microtime(true));
 
-        $rotation = new Rotation();
+        $rotation = new Rotation;
 
         $finallyCalled = false;
 
@@ -83,9 +83,9 @@ class ErrorHandlerTest extends TestCase
         $this->assertTrue($finallyCalled);
     }
 
-    public function testCallFinallyIfFileDontExists(): void
+    public function test_call_finally_if_file_dont_exists(): void
     {
-        $rotation = new Rotation();
+        $rotation = new Rotation;
 
         $finallyCalled = false;
 
@@ -96,11 +96,11 @@ class ErrorHandlerTest extends TestCase
         $this->assertTrue($finallyCalled);
     }
 
-    public function testCallFinallyIfThrowException(): void
+    public function test_call_finally_if_throw_exception(): void
     {
         $this->expectException(RotationFailed::class);
 
-        $rotation = new Rotation();
+        $rotation = new Rotation;
 
         touch(self::DIR_WORK.'/file.log');
         chmod(self::DIR_WORK.'/file.log', 0444);

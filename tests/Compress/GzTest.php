@@ -7,9 +7,9 @@ use Cesargb\Log\Test\TestCase;
 
 class GzTest extends TestCase
 {
-    public function testRotationProcessorWithGzProcessor(): void
+    public function test_rotation_processor_with_gz_processor(): void
     {
-        $rotation = new Rotation();
+        $rotation = new Rotation;
 
         $rotation->compress();
 
@@ -29,12 +29,12 @@ class GzTest extends TestCase
 
         $this->assertFileExists(self::DIR_WORK.'file.log.1.gz');
 
-        $this->assertEquals($content, implode('', (array)gzfile(self::DIR_WORK.'file.log.1.gz')));
+        $this->assertEquals($content, implode('', (array) gzfile(self::DIR_WORK.'file.log.1.gz')));
     }
 
-    public function testRotationProcessorWithGzProcessorWithLevel(): void
+    public function test_rotation_processor_with_gz_processor_with_level(): void
     {
-        $rotation = new Rotation();
+        $rotation = new Rotation;
 
         $rotation->compress();
 
@@ -50,7 +50,6 @@ class GzTest extends TestCase
                     eget, arcu.');
 
         $content .= $content;
-
 
         file_put_contents(self::DIR_WORK.'file.log', $content);
         $rotation->rotate(self::DIR_WORK.'file.log');
@@ -68,9 +67,9 @@ class GzTest extends TestCase
         $this->assertGreaterThan($sizeMaxLevel, $sizeDefaultLevel);
     }
 
-    public function testRotationProcessorWithoutGzProcessorIfLevelIsZero(): void
+    public function test_rotation_processor_without_gz_processor_if_level_is_zero(): void
     {
-        $rotation = new Rotation();
+        $rotation = new Rotation;
 
         $rotation->compress(0);
 
