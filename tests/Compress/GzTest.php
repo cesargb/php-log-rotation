@@ -130,9 +130,6 @@ class GzTest extends TestCase
 
         file_put_contents(self::DIR_WORK.'file.log', $content);
 
-        // Force gzopen() to fail for file.log.1 by making its target path a directory.
-        // files(1) makes the processor unlink() (rather than shift away) the colliding
-        // file.log.1.gz slot; unlink() silently fails on a directory, so it stays in place.
         mkdir(self::DIR_WORK.'file.log.1.gz');
 
         $rotation = new Rotation;
