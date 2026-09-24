@@ -2,8 +2,11 @@
 
 namespace Cesargb\Log\Test\Processors;
 
+use Cesargb\Log\Compress\Gz;
+use Cesargb\Log\Exceptions\RotationFailed;
 use Cesargb\Log\Rotation;
 use Cesargb\Log\Test\TestCase;
+use Exception;
 
 class GzTest extends TestCase
 {
@@ -89,5 +92,127 @@ class GzTest extends TestCase
         $this->assertFileDoesNotExist(self::DIR_WORK.'file.log.1.gz');
 
         $this->assertEquals($content, file_get_contents(self::DIR_WORK.'file.log.1'));
+    }
+
+    public function test_gz_throws_if_source_file_not_exists(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionCode(100);
+
+        @(new Gz)->handler(self::DIR_WORK.'missing.log');
+    }
+
+    public function test_gz_keeps_original_file_if_target_cannot_be_opened(): void
+    {
+        $content = 'some log content';
+
+        file_put_contents(self::DIR_WORK.'file.log', $content);
+
+        // Force gzopen() to fail by making the target path a directory.
+        mkdir(self::DIR_WORK.'file.log.gz');
+
+        try {
+            $this->expectException(Exception::class);
+            $this->expectExceptionCode(101);
+
+            @(new Gz)->handler(self::DIR_WORK.'file.log');
+        } finally {
+            $this->assertFileExists(self::DIR_WORK.'file.log');
+            $this->assertEquals($content, file_get_contents(self::DIR_WORK.'file.log'));
+
+            rmdir(self::DIR_WORK.'file.log.gz');
+        }
+    }
+
+    public function test_rotation_returns_false_and_keeps_rotated_file_if_compression_fails(): void
+    {
+        $content = 'some log content';
+
+        file_put_contents(self::DIR_WORK.'file.log', $content);
+
+        // Force gzopen() to fail for file.log.1 by making its target path a directory.
+        // files(1) makes the processor unlink() (rather than shift away) the colliding
+        // file.log.1.gz slot; unlink() silently fails on a directory, so it stays in place.
+        mkdir(self::DIR_WORK.'file.log.1.gz');
+
+        $rotation = new Rotation;
+
+        $rotation->compress()->files(1);
+
+        $caughtException = null;
+        $finallyCalledTimes = 0;
+
+        $rotation->catch(function (RotationFailed $exception) use (&$caughtException) {
+            $caughtException = $exception;
+        })->finally(function () use (&$finallyCalledTimes) {
+            $finallyCalledTimes++;
+        });
+
+        try {
+            $result = @$rotation->rotate(self::DIR_WORK.'file.log');
+
+            $this->assertFalse($result);
+            $this->assertNotNull($caughtException);
+            $this->assertEquals(101, $caughtException->getCode());
+            $this->assertEquals(1, $finallyCalledTimes);
+
+            $this->assertFileExists(self::DIR_WORK.'file.log.1');
+            $this->assertEquals($content, file_get_contents(self::DIR_WORK.'file.log.1'));
+        } finally {
+            rmdir(self::DIR_WORK.'file.log.1.gz');
+        }
+    }
+
+    public function test_rotation_compresses_pending_file_before_rotating(): void
+    {
+        $previousContent = 'previous rotation left this uncompressed';
+        $newContent = 'new log content';
+
+        file_put_contents(self::DIR_WORK.'file.log.1', $previousContent);
+        file_put_contents(self::DIR_WORK.'file.log', $newContent);
+
+        $rotation = new Rotation;
+
+        $rotation->compress();
+
+        $this->assertTrue($rotation->rotate(self::DIR_WORK.'file.log'));
+
+        $this->assertFileDoesNotExist(self::DIR_WORK.'file.log.1');
+        $this->assertFileExists(self::DIR_WORK.'file.log.1.gz');
+        $this->assertFileExists(self::DIR_WORK.'file.log.2.gz');
+
+        $this->assertEquals($newContent, implode('', (array) gzfile(self::DIR_WORK.'file.log.1.gz')));
+        $this->assertEquals($previousContent, implode('', (array) gzfile(self::DIR_WORK.'file.log.2.gz')));
+    }
+
+    public function test_rotation_aborts_if_pending_file_and_its_gz_exist(): void
+    {
+        $pendingContent = 'pending uncompressed file';
+        $pendingGzContent = 'already compressed file';
+        $newContent = 'new log content';
+
+        file_put_contents(self::DIR_WORK.'file.log.1', $pendingContent);
+        file_put_contents(self::DIR_WORK.'file.log.1.gz', $pendingGzContent);
+        file_put_contents(self::DIR_WORK.'file.log', $newContent);
+
+        $rotation = new Rotation;
+
+        $rotation->compress();
+
+        $caughtException = null;
+
+        $rotation->catch(function (RotationFailed $exception) use (&$caughtException) {
+            $caughtException = $exception;
+        });
+
+        $result = $rotation->rotate(self::DIR_WORK.'file.log');
+
+        $this->assertFalse($result);
+        $this->assertNotNull($caughtException);
+        $this->assertEquals(24, $caughtException->getCode());
+
+        $this->assertEquals($pendingContent, file_get_contents(self::DIR_WORK.'file.log.1'));
+        $this->assertEquals($pendingGzContent, file_get_contents(self::DIR_WORK.'file.log.1.gz'));
+        $this->assertEquals($newContent, file_get_contents(self::DIR_WORK.'file.log'));
     }
 }
