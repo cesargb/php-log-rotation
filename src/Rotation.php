@@ -128,6 +128,10 @@ class Rotation
 
         $fileTarget = $this->runCompress($fileTarget);
 
+         if (is_null($fileTarget)) {
+            return false;
+        }
+
         $this->successful($filename, $fileTarget);
 
         return true;
