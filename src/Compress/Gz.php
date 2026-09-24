@@ -31,12 +31,32 @@ class Gz
         while (! feof($fd)) {
             $data = fread($fd, 1024 * 512);
 
-            $data = $data === false ? '' : $data;
+            if ($data === false) {
+                gzclose($gz);
+                fclose($fd);
+                unlink($filenameCompress);
 
-            gzwrite($gz, $data);
+                throw new Exception("failed to read {$filename}.", 102);
+            }
+
+            $written = gzwrite($gz, $data);
+
+            if ($written === false || $written < strlen($data)) {
+                gzclose($gz);
+                fclose($fd);
+                unlink($filenameCompress);
+
+                throw new Exception("failed to write in {$filenameCompress}.", 103);
+            }
         }
 
-        gzclose($gz);
+        if (! gzclose($gz)) {
+            fclose($fd);
+            unlink($filenameCompress);
+
+            throw new Exception("failed to close {$filenameCompress}.", 104);
+        }
+
         fclose($fd);
         unlink($filename);
 

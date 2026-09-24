@@ -109,6 +109,10 @@ class Rotation
             return false;
         }
 
+        if (! $this->compressPendingRotation($filename)) {
+            return false;
+        }
+
         $fileTemporary = $this->_truncate
             ? $this->copyAndTruncate($filename)
             : $this->move($filename);
@@ -127,6 +131,10 @@ class Rotation
         }
 
         $fileTarget = $this->runCompress($fileTarget);
+
+        if (is_null($fileTarget)) {
+            return false;
+        }
 
         $this->successful($filename, $fileTarget);
 
@@ -320,5 +328,24 @@ class Rotation
         }
 
         return $fd;
+    }
+
+    private function compressPendingRotation(string $filename): bool
+    {
+        $pending = "{$filename}.1";
+
+        if (! $this->_compress || ! is_file($pending)) {
+            return true;
+        }
+
+        if (file_exists($pending.'.'.Gz::EXTENSION_COMPRESS)) {
+            $this->exception(
+                new Exception(sprintf('the file %s is pending to compress but %s.gz already exists.', $pending, $pending), 24)
+            );
+
+            return false;
+        }
+
+        return ! is_null($this->runCompress($pending));
     }
 }
