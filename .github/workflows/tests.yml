@@ -4,16 +4,23 @@ on:
   push:
     branches: [main]
     paths:
+      - "composer.json"
       - "**.php"
       - "phpunit.xml.dist"
       - ".github/workflows/tests.yml"
   pull_request:
-    branches: [main]
     paths:
+      - "composer.json"
       - "**.php"
       - "phpunit.xml.dist"
       - ".github/workflows/tests.yml"
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   run-tests:
     runs-on: ubuntu-latest
@@ -35,7 +42,7 @@ jobs:
           coverage: none
 
       - name: Install dependencies
-        uses: "ramsey/composer-install@v4"
+        uses: ramsey/composer-install@v4
 
       - name: Execute tests
         run: composer test
