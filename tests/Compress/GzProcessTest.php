@@ -3,6 +3,7 @@
 namespace Cesargb\Log\Test\Compress;
 
 use Cesargb\Log\Compress\Gz;
+use Cesargb\Log\Exceptions\ProcessException;
 use Cesargb\Log\Test\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -68,8 +69,9 @@ class GzProcessTest extends TestCase
 
         $this->assertFalse($result->isSuccessful());
         $this->assertNull($result->filenameTarget);
-        $this->assertStringContainsString('not can read', (string) $result->exception?->getMessage());
-        $this->assertEquals(100, $result->exception?->getCode());
+        $this->assertInstanceOf(ProcessException::class, $result->exception);
+        $this->assertStringContainsString('not can read', $result->exception->getMessage());
+        $this->assertEquals(100, $result->exception->getCode());
     }
 
     public function test_process_returns_failed_result_and_keeps_source_when_gz_target_is_not_writable(): void
@@ -87,8 +89,9 @@ class GzProcessTest extends TestCase
         }
 
         $this->assertFalse($result->isSuccessful());
-        $this->assertStringContainsString('not can open', (string) $result->exception?->getMessage());
-        $this->assertEquals(101, $result->exception?->getCode());
+        $this->assertInstanceOf(ProcessException::class, $result->exception);
+        $this->assertStringContainsString('not can open', $result->exception->getMessage());
+        $this->assertEquals(101, $result->exception->getCode());
 
         $this->assertFileExists(self::DIR_WORK.'file.log');
 

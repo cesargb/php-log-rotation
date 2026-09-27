@@ -2,8 +2,8 @@
 
 namespace Cesargb\Log\Compress;
 
+use Cesargb\Log\Exceptions\ProcessException;
 use Cesargb\Log\Results\ProcessResult;
-use Exception;
 
 class Gz
 {
@@ -12,7 +12,7 @@ class Gz
     /**
      * @deprecated Use process() instead. handler() will be removed in a future major version.
      *
-     * @throws Exception
+     * @throws ProcessException
      */
     public function handler(string $filename, ?int $level = null): string
     {
@@ -22,7 +22,7 @@ class Gz
             throw $result->exception;
         }
 
-        return $result->filenameTarget ?? throw new Exception("file {$filename} not can compress.", 100);
+        return $result->filenameTarget ?? throw new ProcessException("file {$filename} not can compress.", 100);
     }
 
     public function process(string $filename, ?int $level = null): ProcessResult
@@ -32,7 +32,7 @@ class Gz
         $fd = fopen($filename, 'r');
 
         if ($fd === false) {
-            return ProcessResult::failed($filename, new Exception("file {$filename} not can read.", 100));
+            return ProcessResult::failed($filename, new ProcessException("file {$filename} not can read.", 100));
         }
 
         $level = $level ?? '';
@@ -42,20 +42,20 @@ class Gz
         if ($gz === false) {
             fclose($fd);
 
-            return ProcessResult::failed($filename, new Exception("file {$filenameCompress} not can open.", 101));
+            return ProcessResult::failed($filename, new ProcessException("file {$filenameCompress} not can open.", 101));
         }
 
         while (! feof($fd)) {
             $data = fread($fd, 1024 * 512);
 
             if ($data === false) {
-                return $this->abortCompression($gz, $fd, $filenameCompress, $filename, new Exception("file {$filename} not can read.", 102));
+                return $this->abortCompression($gz, $fd, $filenameCompress, $filename, new ProcessException("file {$filename} not can read.", 102));
             }
 
             $bytesWritten = gzwrite($gz, $data);
 
             if ($bytesWritten !== strlen($data)) {
-                return $this->abortCompression($gz, $fd, $filenameCompress, $filename, new Exception("file {$filenameCompress} not can write.", 103));
+                return $this->abortCompression($gz, $fd, $filenameCompress, $filename, new ProcessException("file {$filenameCompress} not can write.", 103));
             }
         }
 
@@ -63,7 +63,7 @@ class Gz
             fclose($fd);
             @unlink($filenameCompress);
 
-            return ProcessResult::failed($filename, new Exception("file {$filenameCompress} not can close.", 104));
+            return ProcessResult::failed($filename, new ProcessException("file {$filenameCompress} not can close.", 104));
         }
 
         fclose($fd);
@@ -76,7 +76,7 @@ class Gz
      * @param  resource  $gz
      * @param  resource  $fd
      */
-    private function abortCompression($gz, $fd, string $filenameCompress, string $filename, Exception $exception): ProcessResult
+    private function abortCompression($gz, $fd, string $filenameCompress, string $filename, ProcessException $exception): ProcessResult
     {
         gzclose($gz);
         fclose($fd);

@@ -3,6 +3,7 @@
 namespace Cesargb\Log;
 
 use Cesargb\Log\Compress\Gz;
+use Cesargb\Log\Exceptions\ProcessException;
 use Cesargb\Log\Processors\RotativeProcessor;
 use Exception;
 
@@ -164,7 +165,7 @@ class Rotation
         }
 
         if (! $result->isSuccessful()) {
-            $this->exception($result->exception ?? new Exception(sprintf('the file %s not can compress.', $filename), 100));
+            $this->exception($result->exception ?? new ProcessException(sprintf('the file %s not can compress.', $filename), 100));
 
             return null;
         }
