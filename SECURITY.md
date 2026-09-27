@@ -18,8 +18,6 @@ Instead, report them privately using GitHub's private vulnerability reporting:
 3. Fill in the advisory form with as much detail as possible (affected versions, steps to reproduce, impact, and a suggested fix if you have one).
 4. Click **Submit report**.
 
-The maintainers will be notified and can collaborate with you privately on a fix.
+The maintainer will be notified and can collaborate with you privately on a fix.
 For more details, see GitHub's documentation on
 [privately reporting a security vulnerability](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/report-privately).
-
-You can expect a first response within 7 days.
