@@ -2,20 +2,20 @@
 
 namespace Cesargb\Log\Compress;
 
-use Exception;
+use Cesargb\Log\Results\ProcessResult;
 
 class Gz
 {
     public const EXTENSION_COMPRESS = 'gz';
 
-    public function handler(string $filename, ?int $level = null): string
+    public function handler(string $filename, ?int $level = null): ProcessResult
     {
         $filenameCompress = $filename.'.'.self::EXTENSION_COMPRESS;
 
         $fd = fopen($filename, 'r');
 
         if ($fd === false) {
-            throw new Exception("file {$filename} not can read.", 100);
+            return ProcessResult::failed($filename, "file {$filename} not can read.");
         }
 
         $level = $level ?? '';
@@ -25,21 +25,46 @@ class Gz
         if ($gz === false) {
             fclose($fd);
 
-            throw new Exception("file {$filenameCompress} not can open.", 101);
+            return ProcessResult::failed($filename, "file {$filenameCompress} not can open.");
         }
 
         while (! feof($fd)) {
             $data = fread($fd, 1024 * 512);
 
-            $data = $data === false ? '' : $data;
+            if ($data === false) {
+                return $this->abortCompression($gz, $fd, $filenameCompress, $filename, "file {$filename} not can read.");
+            }
 
-            gzwrite($gz, $data);
+            $bytesWritten = gzwrite($gz, $data);
+
+            if ($bytesWritten !== strlen($data)) {
+                return $this->abortCompression($gz, $fd, $filenameCompress, $filename, "file {$filenameCompress} not can write.");
+            }
         }
 
-        gzclose($gz);
+        if (! gzclose($gz)) {
+            fclose($fd);
+            @unlink($filenameCompress);
+
+            return ProcessResult::failed($filename, "file {$filenameCompress} not can close.");
+        }
+
         fclose($fd);
         unlink($filename);
 
-        return $filenameCompress;
+        return ProcessResult::successful($filename, $filenameCompress);
+    }
+
+    /**
+     * @param  resource  $gz
+     * @param  resource  $fd
+     */
+    private function abortCompression($gz, $fd, string $filenameCompress, string $filename, string $error): ProcessResult
+    {
+        gzclose($gz);
+        fclose($fd);
+        @unlink($filenameCompress);
+
+        return ProcessResult::failed($filename, $error);
     }
 }
