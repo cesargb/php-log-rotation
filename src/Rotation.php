@@ -3,6 +3,7 @@
 namespace Cesargb\Log;
 
 use Cesargb\Log\Compress\Gz;
+use Cesargb\Log\Exceptions\ProcessException;
 use Cesargb\Log\Processors\RotativeProcessor;
 use Exception;
 
@@ -156,12 +157,20 @@ class Rotation
         $gz = new Gz;
 
         try {
-            return $gz->handler($filename, $this->_compressLevel);
+            $result = $gz->process($filename, $this->_compressLevel);
         } catch (Exception $error) {
             $this->exception($error);
 
             return null;
         }
+
+        if (! $result->isSuccessful()) {
+            $this->exception($result->exception ?? new ProcessException(sprintf('the file %s not can compress.', $filename), 100));
+
+            return null;
+        }
+
+        return $result->filenameTarget;
     }
 
     /**
