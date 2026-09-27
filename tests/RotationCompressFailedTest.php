@@ -69,4 +69,44 @@ class RotationCompressFailedTest extends TestCase
 
         $this->assertFileExists(self::DIR_WORK.'file.log.1');
     }
+
+    public function test_catch_receives_error_exception_thrown_by_error_handler(): void
+    {
+        file_put_contents(self::DIR_WORK.'file.log', microtime(true));
+
+        $this->makeCompressTargetUnwritable();
+
+        $rotation = new Rotation;
+
+        $caught = null;
+
+        set_error_handler(function (int $severity, string $message, string $file, int $line) {
+            // RotativeProcessor also triggers a warning (unlink() on a
+            // directory) before Gz ever runs; that's a separate, pre-existing
+            // issue outside the scope of this test, so only convert the
+            // gzopen() warning into an ErrorException, like Laravel does.
+            if (! str_contains($message, 'gzopen')) {
+                return false;
+            }
+
+            throw new \ErrorException($message, 0, $severity, $file, $line);
+        });
+
+        try {
+            $rotation
+                ->compress()
+                ->files(1)
+                ->catch(function (RotationFailed $exception) use (&$caught) {
+                    $caught = $exception;
+                })
+                ->rotate(self::DIR_WORK.'file.log');
+        } finally {
+            restore_error_handler();
+
+            rmdir(self::DIR_WORK.'file.log.1.gz');
+        }
+
+        $this->assertInstanceOf(RotationFailed::class, $caught);
+        $this->assertFileExists(self::DIR_WORK.'file.log.1');
+    }
 }

@@ -155,7 +155,13 @@ class Rotation
 
         $gz = new Gz;
 
-        $result = $gz->process($filename, $this->_compressLevel);
+        try {
+            $result = $gz->process($filename, $this->_compressLevel);
+        } catch (Exception $error) {
+            $this->exception($error);
+
+            return null;
+        }
 
         if (! $result->isSuccessful()) {
             $this->exception(
