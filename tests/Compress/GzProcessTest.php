@@ -19,7 +19,7 @@ class GzProcessTest extends TestCase
         $this->assertTrue($result->isSuccessful());
         $this->assertEquals(self::DIR_WORK.'file.log', $result->filenameSource);
         $this->assertEquals(self::DIR_WORK.'file.log.gz', $result->filenameTarget);
-        $this->assertNull($result->error);
+        $this->assertNull($result->exception);
 
         $this->assertFileDoesNotExist(self::DIR_WORK.'file.log');
         $this->assertEquals($content, implode('', (array) gzfile(self::DIR_WORK.'file.log.gz')));
@@ -68,8 +68,8 @@ class GzProcessTest extends TestCase
 
         $this->assertFalse($result->isSuccessful());
         $this->assertNull($result->filenameTarget);
-        $this->assertStringContainsString('not can read', (string) $result->error);
-        $this->assertEquals(100, $result->errorCode);
+        $this->assertStringContainsString('not can read', (string) $result->exception?->getMessage());
+        $this->assertEquals(100, $result->exception?->getCode());
     }
 
     public function test_process_returns_failed_result_and_keeps_source_when_gz_target_is_not_writable(): void
@@ -87,8 +87,8 @@ class GzProcessTest extends TestCase
         }
 
         $this->assertFalse($result->isSuccessful());
-        $this->assertStringContainsString('not can open', (string) $result->error);
-        $this->assertEquals(101, $result->errorCode);
+        $this->assertStringContainsString('not can open', (string) $result->exception?->getMessage());
+        $this->assertEquals(101, $result->exception?->getCode());
 
         $this->assertFileExists(self::DIR_WORK.'file.log');
 

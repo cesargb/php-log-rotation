@@ -164,9 +164,7 @@ class Rotation
         }
 
         if (! $result->isSuccessful()) {
-            $this->exception(
-                new Exception($result->error ?? sprintf('the file %s not can compress.', $filename), $result->errorCode ?? 100)
-            );
+            $this->exception($result->exception ?? new Exception(sprintf('the file %s not can compress.', $filename), 100));
 
             return null;
         }

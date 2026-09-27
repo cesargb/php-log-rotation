@@ -4,6 +4,7 @@ namespace Cesargb\Log\Test\Results;
 
 use Cesargb\Log\Results\ProcessResult;
 use Cesargb\Log\Test\TestCase;
+use Exception;
 
 class ProcessResultTest extends TestCase
 {
@@ -14,24 +15,17 @@ class ProcessResultTest extends TestCase
         $this->assertTrue($result->isSuccessful());
         $this->assertEquals('file.log', $result->filenameSource);
         $this->assertEquals('file.log.1', $result->filenameTarget);
-        $this->assertNull($result->error);
+        $this->assertNull($result->exception);
     }
 
-    public function test_failed_result_with_error(): void
+    public function test_failed_result_with_exception(): void
     {
-        $result = ProcessResult::failed('file.log', 'file file.log not can read.');
+        $result = ProcessResult::failed('file.log', new Exception('file file.log not can read.', 100));
 
         $this->assertFalse($result->isSuccessful());
         $this->assertEquals('file.log', $result->filenameSource);
         $this->assertNull($result->filenameTarget);
-        $this->assertEquals('file file.log not can read.', $result->error);
-    }
-
-    public function test_failed_result_without_error(): void
-    {
-        $result = ProcessResult::failed('file.log');
-
-        $this->assertFalse($result->isSuccessful());
-        $this->assertNull($result->error);
+        $this->assertEquals('file file.log not can read.', $result->exception?->getMessage());
+        $this->assertEquals(100, $result->exception?->getCode());
     }
 }

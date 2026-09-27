@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Cesargb\Log\Results;
 
+use Exception;
+
 final class ProcessResult
 {
     private function __construct(
         public readonly string $filenameSource,
         public readonly ?string $filenameTarget,
-        public readonly ?string $error = null,
-        public readonly ?int $errorCode = null,
+        public readonly ?Exception $exception = null,
     ) {}
 
     public static function successful(string $filenameSource, string $filenameTarget): self
@@ -18,9 +19,9 @@ final class ProcessResult
         return new self($filenameSource, $filenameTarget);
     }
 
-    public static function failed(string $filenameSource, ?string $error = null, ?int $errorCode = null): self
+    public static function failed(string $filenameSource, Exception $exception): self
     {
-        return new self($filenameSource, null, $error, $errorCode);
+        return new self($filenameSource, null, $exception);
     }
 
     public function isSuccessful(): bool
