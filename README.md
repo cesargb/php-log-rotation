@@ -11,6 +11,8 @@ This PHP package allows you to rotate a log file and compress it.
 
 ## Installation
 
+Requires PHP 8.1 or higher.
+
 You can install this package via composer using:
 
 ```sh

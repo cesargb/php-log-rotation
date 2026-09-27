@@ -23,7 +23,7 @@ class RotationCompressFailedTest extends TestCase
 
         $this->expectException(RotationFailed::class);
         $this->expectExceptionMessageMatches('/file\.log\.1\.gz not can open\.$/');
-        $this->expectExceptionCode(100);
+        $this->expectExceptionCode(101);
 
         $rotation = new Rotation;
 

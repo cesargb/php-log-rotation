@@ -10,6 +10,7 @@ final class ProcessResult
         public readonly string $filenameSource,
         public readonly ?string $filenameTarget,
         public readonly ?string $error = null,
+        public readonly ?int $errorCode = null,
     ) {}
 
     public static function successful(string $filenameSource, string $filenameTarget): self
@@ -17,9 +18,9 @@ final class ProcessResult
         return new self($filenameSource, $filenameTarget);
     }
 
-    public static function failed(string $filenameSource, ?string $error = null): self
+    public static function failed(string $filenameSource, ?string $error = null, ?int $errorCode = null): self
     {
-        return new self($filenameSource, null, $error);
+        return new self($filenameSource, null, $error, $errorCode);
     }
 
     public function isSuccessful(): bool
